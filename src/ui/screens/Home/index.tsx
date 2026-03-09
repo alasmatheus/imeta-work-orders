@@ -1,13 +1,23 @@
-import { Container } from "@/components/Container";
-import React from "react";
+import { useEffect } from "react";
 import { Text, View } from "react-native";
 
+import { Container } from "@components/Container";
+import { useWorkOrdersStore } from "@stores/workOrders.store";
+
 export function Home() {
+  const items = useWorkOrdersStore((state) => state.items);
+  const loading = useWorkOrdersStore((state) => state.loading);
+  const loadFromRealm = useWorkOrdersStore((state) => state.loadFromRealm);
+
+  useEffect(() => {
+    loadFromRealm();
+  }, [loadFromRealm]);
+
   return (
-    <Container>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <Container loading={loading}>
+      <View>
         <Text>Ordens de serviço</Text>
-        <Text>Estrutura inicial do projeto offline-first</Text>
+        <Text>Total: {items.length}</Text>
       </View>
     </Container>
   );
