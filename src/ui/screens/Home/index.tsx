@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { Text, View } from "react-native";
 
+import { useSyncStore } from "@/stores/sync.store";
 import { Container } from "@components/Container";
 import { useWorkOrdersStore } from "@stores/workOrders.store";
 
 export function Home() {
+  const isOnline = useSyncStore((state) => state.isOnline);
   const items = useWorkOrdersStore((state) => state.items);
   const loading = useWorkOrdersStore((state) => state.loading);
   const loadFromRealm = useWorkOrdersStore((state) => state.loadFromRealm);
@@ -16,6 +18,11 @@ export function Home() {
   return (
     <Container loading={loading}>
       <View>
+        {!isOnline && (
+          <Text style={{ color: "red" }}>
+            Você está offline. Alterações serão sincronizadas depois.
+          </Text>
+        )}
         <Text>Ordens de serviço</Text>
         <Text>Total: {items.length}</Text>
       </View>

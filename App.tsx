@@ -1,4 +1,5 @@
 // App.tsx
+import { useNetworkMonitor } from "@/hooks/useNetworkMonitor";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -16,6 +17,8 @@ import { Container } from "@/components/Container";
 import { Routes } from "@routes/index";
 
 export default function App() {
+  useNetworkMonitor();
+
   const [fontsLoaded] = useFonts({
     Raleway_400Regular,
     Raleway_700Bold,
