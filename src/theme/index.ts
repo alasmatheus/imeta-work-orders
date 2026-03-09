@@ -1,0 +1,30 @@
+export const THEME: any = {
+  colors: {
+    black: "#000000",
+    white: "#FFFFFF",
+    redCricality: "#B11111",
+    green800: "#166534",
+    gray600: "#4B5563",
+    transparent78: "rgba(0,0,0,0.78)",
+  },
+  fonts: {
+    body: "Raleway_400Regular",
+    title: "Raleway_500Medium",
+    semiBold: "Raleway_600SemiBold",
+    bold: "Raleway_700Bold",
+    light: "Raleway_300Light",
+  },
+  fontSizes: {
+    m9: 9,
+    m10: 10,
+    m11: 11,
+    xs: 12,
+    sm: 14,
+    m15: 15,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    xl1: 24,
+    titleScreen: 24,
+  },
+};

@@ -1,0 +1,30 @@
+{
+  "build": {
+    "qa": {
+      "distribution": "internal",
+      "channel": "qa",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "APP_ENV": "qa"
+      }
+    },
+    "production": {
+      "channel": "production",
+      "ios": {
+        "image": "latest",
+        "resourceClass": "m1-medium"
+      },
+      "env": {
+        "APP_ENV": "production"
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  }
+}
