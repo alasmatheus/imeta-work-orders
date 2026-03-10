@@ -1,6 +1,8 @@
+import { LocalWorkOrder } from "@/domain/workOrders/localWorkOrder";
 import { mapRealmWorkOrder } from "@data/realm/mappers";
 import { getRealm } from "@data/realm/realm";
-import { WorkOrder, WorkOrderStatus } from "@domain/workOrders/types";
+import { WorkOrderStatus } from "@domain/workOrders/types";
+
 import { create } from "zustand";
 
 type CreateWorkOrderInput = {
@@ -13,7 +15,7 @@ type CreateWorkOrderInput = {
 type UpdateWorkOrderInput = Partial<CreateWorkOrderInput>;
 
 type WorkOrdersStore = {
-  items: WorkOrder[];
+  items: LocalWorkOrder[];
   loading: boolean;
   error: string | null;
 
