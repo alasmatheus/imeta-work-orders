@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 import {
   FlatList,
@@ -7,9 +8,9 @@ import {
   View,
 } from "react-native";
 
-import { Container } from "@components/Container";
-import { useSyncStore } from "@stores/sync.store";
-import { useWorkOrdersStore } from "@stores/workOrders.store";
+import { Container } from "@/components/Container";
+import { useSyncStore } from "@/stores/sync.store";
+import { useWorkOrdersStore } from "@/stores/workOrders.store";
 import { styles } from "./styles";
 
 function getStatusLabel(status: string) {
@@ -37,6 +38,7 @@ function getSyncLabel(syncStatus: string) {
 }
 
 export function Home() {
+  const navigation = useNavigation<any>();
   const isOnline = useSyncStore((state) => state.isOnline);
 
   const items = useWorkOrdersStore((state) => state.items);
@@ -51,7 +53,7 @@ export function Home() {
   return (
     <Container loading={loading} backgroundColor="#F8F9FA">
       <View style={styles.wrapper}>
-        <View style={styles.header}>
+        <View style={[styles.header, styles.headerRow]}>
           <View>
             <Text style={styles.eyebrow}>FieldSync</Text>
             <Text style={styles.title}>Ordens de serviço</Text>
@@ -141,7 +143,11 @@ export function Home() {
             </View>
           }
           renderItem={({ item }) => (
-            <TouchableOpacity activeOpacity={0.92} style={styles.card}>
+            <TouchableOpacity
+              activeOpacity={0.92}
+              style={styles.cardItem}
+              onPress={() => navigation.navigate("edit", { id: item.id })}
+            >
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle} numberOfLines={1}>
                   {item.title}

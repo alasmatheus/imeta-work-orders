@@ -1,68 +1,46 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 
 import { Container } from "@/components/Container";
 import { WorkOrderForm } from "@/components/WorkOrderForm";
-import { AppNavigatorRoutesProps } from "@/routes/appBottom.routes";
 import { useWorkOrdersStore } from "@/stores/workOrders.store";
 import { styles } from "./styles";
 
-export function Add() {
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
+export function Edit() {
+  const route = useRoute<any>();
+  const navigation = useNavigation<any>();
 
-  const createLocal = useWorkOrdersStore((state) => state.createLocal);
+  const { id } = route.params;
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [assignedTo, setAssignedTo] = useState("");
+  const items = useWorkOrdersStore((state) => state.items);
+  const updateLocal = useWorkOrdersStore((state) => state.updateLocal);
+
+  const order = items.find((item) => item.id === id);
+
+  const [title, setTitle] = useState(order?.title || "");
+  const [description, setDescription] = useState(order?.description || "");
+  const [assignedTo, setAssignedTo] = useState(order?.assignedTo || "");
   const [status, setStatus] = useState<"Pending" | "In Progress" | "Completed">(
-    "Pending",
+    (order?.status as "Pending" | "In Progress" | "Completed") || "Pending",
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function validateForm() {
-    if (!title.trim()) {
-      Alert.alert("Atenção", "Informe o título da ordem de serviço.");
-      return false;
-    }
-
-    if (!description.trim()) {
-      Alert.alert("Atenção", "Informe a descrição da ordem de serviço.");
-      return false;
-    }
-
-    if (!assignedTo.trim()) {
-      Alert.alert("Atenção", "Informe o nome do técnico responsável.");
-      return false;
-    }
-
-    return true;
-  }
-
-  async function handleSubmit() {
-    if (!validateForm()) return;
-
+  async function handleSave() {
     try {
       setIsSubmitting(true);
 
-      await createLocal({
+      await updateLocal(id, {
         title: title.trim(),
         description: description.trim(),
         assignedTo: assignedTo.trim(),
         status,
       });
 
-      Alert.alert("Sucesso", "Ordem de serviço criada com sucesso.");
-
-      setTitle("");
-      setDescription("");
-      setAssignedTo("");
-      setStatus("Pending");
-
-      navigation.navigate("home");
+      Alert.alert("Sucesso", "Ordem de serviço atualizada com sucesso.");
+      navigation.goBack();
     } catch {
-      Alert.alert("Erro", "Não foi possível criar a ordem de serviço.");
+      Alert.alert("Erro", "Não foi possível atualizar a ordem de serviço.");
     } finally {
       setIsSubmitting(false);
     }
@@ -76,9 +54,9 @@ export function Add() {
       >
         <View style={styles.header}>
           <Text style={styles.eyebrow}>FIELDSYNC</Text>
-          <Text style={styles.title}>Nova ordem de serviço</Text>
+          <Text style={styles.title}>Editar ordem</Text>
           <Text style={styles.subtitle}>
-            Cadastre uma nova ordem para uso local e sincronização futura.
+            Atualize os dados da ordem de serviço localmente.
           </Text>
         </View>
 
@@ -89,12 +67,12 @@ export function Add() {
             assignedTo={assignedTo}
             status={status}
             isSubmitting={isSubmitting}
-            submitLabel="Criar ordem"
+            submitLabel="Salvar alterações"
             onChangeTitle={setTitle}
             onChangeDescription={setDescription}
             onChangeAssignedTo={setAssignedTo}
             onChangeStatus={setStatus}
-            onSubmit={handleSubmit}
+            onSubmit={handleSave}
           />
         </View>
       </ScrollView>

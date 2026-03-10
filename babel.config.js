@@ -27,6 +27,7 @@ module.exports = function (api) {
             "@data": "./src/data",
             "@domain": "./src/domain",
             "@stores": "./src/stores",
+            "@styles": "./src/styles",
           },
         },
       ],

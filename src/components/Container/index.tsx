@@ -1,33 +1,30 @@
-// src/components/Container.tsx
-import { THEME } from "@theme/index";
 import React from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
   ViewProps,
 } from "react-native";
 
+import { styles } from "./styles";
+
 export interface ContainerProps extends ViewProps {
   backgroundColor?: string;
   children?: React.ReactNode;
   enableKeyboardDismissHandler?: boolean;
-  /** se true, envolve o conteúdo em KeyboardAvoidingView */
   avoidKeyboard?: boolean;
   keyboardAvoidingBehavior?: "height" | "position" | "padding";
   keyboardVerticalOffset?: number;
   loading?: boolean;
   loadingMessage?: string;
   loadingVariant?: "normal" | "save" | "progressBar";
-  // edges existia, mas agora é ignorado (pra não quebrar telas antigas)
   edges?: any;
 }
 
-export const Container: React.FC<ContainerProps> = ({
+export function Container({
   backgroundColor = "#FFFFFF",
   children,
   enableKeyboardDismissHandler = false,
@@ -35,18 +32,12 @@ export const Container: React.FC<ContainerProps> = ({
   keyboardAvoidingBehavior = Platform.OS === "ios" ? "padding" : "height",
   keyboardVerticalOffset,
   loading = false,
-  loadingMessage,
-  loadingVariant = "normal",
+  loadingMessage = "Carregando...",
   style,
   ...rest
-}: ContainerProps) => {
-  // offset padrão do teclado (bem neutro agora, quem quiser pode passar via prop)
+}: ContainerProps) {
   const kavOffset =
-    keyboardVerticalOffset !== undefined
-      ? keyboardVerticalOffset
-      : Platform.OS === "ios"
-        ? 0
-        : 0;
+    keyboardVerticalOffset !== undefined ? keyboardVerticalOffset : 0;
 
   const content = enableKeyboardDismissHandler ? (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -76,30 +67,10 @@ export const Container: React.FC<ContainerProps> = ({
       {loading && (
         <View style={styles.loadingOverlay} pointerEvents="auto">
           <View style={styles.loadingInner}>
-            <Text>Carregando</Text>
+            <Text style={styles.loadingText}>{loadingMessage}</Text>
           </View>
         </View>
       )}
     </>
   );
-};
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  loadingOverlay: {
-    alignItems: "center",
-    backgroundColor: THEME.colors.transparent78,
-    bottom: 0,
-    justifyContent: "center",
-    left: 0,
-    position: "absolute",
-    right: 0,
-    top: 0,
-  },
-  loadingInner: {
-    padding: 16,
-    borderRadius: 8,
-  },
-});
+}

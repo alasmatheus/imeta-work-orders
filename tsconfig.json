@@ -21,7 +21,8 @@
       "@theme/*": ["src/theme/*"],
       "@data/*": ["src/data/*"],
       "@domain/*": ["src/domain/*"],
-      "@stores/*": ["src/stores/*"]
+      "@stores/*": ["src/stores/*"],
+      "@styles/*": ["src/styles/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]

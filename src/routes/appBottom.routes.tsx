@@ -11,11 +11,13 @@ import React from "react";
 
 //Routes
 import { Add } from "@ui/screens/Add";
+import { Edit } from "@ui/screens/Edit";
 import { Home } from "@ui/screens/Home";
 
 export type AppRoutes = {
   home: undefined;
   add: undefined;
+  edit: string;
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
@@ -86,6 +88,16 @@ export function AppBottomRoutes() {
             fontSize: 12,
             fontFamily: THEME.fonts.body,
           },
+        }}
+      />
+
+      {/* Rotas “ocultas” sem botão na tab bar */}
+      <Screen
+        name="edit"
+        component={Edit}
+        options={{
+          title: "Edição",
+          tabBarButton: () => null,
         }}
       />
     </Navigator>

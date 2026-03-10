@@ -10,7 +10,7 @@ export function useNetworkMonitor() {
       const status = await getNetworkStatus();
 
       const online =
-        status.isConnected === true && status.isInternetReachable === true;
+        status.isConnected === true && status.isInternetReachable !== false;
 
       setOnlineStatus(online);
     }
@@ -20,5 +20,5 @@ export function useNetworkMonitor() {
     const interval = setInterval(checkConnection, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [setOnlineStatus]);
 }

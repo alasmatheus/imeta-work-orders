@@ -1,7 +1,7 @@
 import { WorkOrderDTO } from "@/dtos/workOrder.dto";
 import { api } from "./api";
 
-export const WorkOrderDTOsAPI = {
+export const WorkOrdersAPI = {
   async getAll(): Promise<WorkOrderDTO[]> {
     const { data } = await api.get<WorkOrderDTO[]>("/work-orders");
     return data;

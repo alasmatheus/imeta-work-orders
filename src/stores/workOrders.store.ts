@@ -41,7 +41,9 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
   loadFromRealm: async () => {
     try {
       set({ loading: true, error: null });
+
       const items = await getLocalWorkOrders();
+
       set({ items, loading: false });
     } catch {
       set({
@@ -54,9 +56,14 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
   loadFromApi: async () => {
     try {
       set({ loading: true, error: null });
+
       const items = await fetchAndCacheWorkOrders();
+
       set({ items, loading: false });
-    } catch {
+    } catch (error: any) {
+      console.log("Erro real no loadFromApi:", error?.message);
+      console.log("Stack:", error?.stack);
+
       set({
         loading: false,
         error: "Erro ao carregar ordens da API.",
