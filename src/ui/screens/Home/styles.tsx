@@ -277,4 +277,115 @@ export const styles = StyleSheet.create({
   badgeTextCompleted: {
     color: "#188038",
   },
+  cardHeaderRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+
+  iconButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F8F9FA",
+    borderWidth: 1,
+    borderColor: "#ECEFF1",
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+
+  modalCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#ECEFF1",
+  },
+
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 18,
+  },
+
+  modalTitle: {
+    flex: 1,
+    fontFamily: THEME.fonts.bold,
+    fontSize: 20,
+    color: "#202124",
+  },
+
+  modalCloseButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F8F9FA",
+  },
+
+  detailBlock: {
+    marginBottom: 14,
+  },
+
+  detailLabel: {
+    fontFamily: THEME.fonts.semiBold,
+    fontSize: 12,
+    color: "#5F6368",
+    textTransform: "uppercase",
+    marginBottom: 4,
+  },
+
+  detailValue: {
+    fontFamily: THEME.fonts.body,
+    fontSize: 14,
+    color: "#202124",
+    lineHeight: 20,
+  },
+
+  modalFooter: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 12,
+  },
+
+  modalSecondaryButton: {
+    flex: 1,
+    height: 44,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F8F9FA",
+    borderWidth: 1,
+    borderColor: "#DADCE0",
+  },
+
+  modalSecondaryButtonText: {
+    fontFamily: THEME.fonts.semiBold,
+    fontSize: 14,
+    color: "#202124",
+  },
+
+  modalPrimaryButton: {
+    flex: 1,
+    height: 44,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#1967D2",
+  },
+
+  modalPrimaryButtonText: {
+    fontFamily: THEME.fonts.semiBold,
+    fontSize: 14,
+    color: "#FFFFFF",
+  },
 });

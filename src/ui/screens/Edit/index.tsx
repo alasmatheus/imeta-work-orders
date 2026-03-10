@@ -1,32 +1,67 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 
 import { Container } from "@/components/Container";
 import { WorkOrderForm } from "@/components/WorkOrderForm";
+import { useSyncStore } from "@/stores/sync.store";
 import { useWorkOrdersStore } from "@/stores/workOrders.store";
 import { styles } from "./styles";
 
 export function Edit() {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-
   const { id } = route.params;
 
-  const items = useWorkOrdersStore((state) => state.items);
+  const isOnline = useSyncStore((state) => state.isOnline);
+
+  const selectedItem = useWorkOrdersStore((state) => state.selectedItem);
+  const loading = useWorkOrdersStore((state) => state.loading);
+  const loadWorkOrderById = useWorkOrdersStore(
+    (state) => state.loadWorkOrderById,
+  );
   const updateLocal = useWorkOrdersStore((state) => state.updateLocal);
+  const clearSelectedItem = useWorkOrdersStore(
+    (state) => state.clearSelectedItem,
+  );
 
-  const order = items.find((item) => item.id === id);
-
-  const [title, setTitle] = useState(order?.title || "");
-  const [description, setDescription] = useState(order?.description || "");
-  const [assignedTo, setAssignedTo] = useState(order?.assignedTo || "");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
   const [status, setStatus] = useState<"Pending" | "In Progress" | "Completed">(
-    (order?.status as "Pending" | "In Progress" | "Completed") || "Pending",
+    "Pending",
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    async function loadData() {
+      const item = await loadWorkOrderById(id, isOnline);
+
+      if (!item) {
+        Alert.alert("Erro", "Não foi possível carregar a ordem de serviço.");
+        navigation.goBack();
+        return;
+      }
+
+      setTitle(item.title);
+      setDescription(item.description);
+      setAssignedTo(item.assignedTo);
+      setStatus(item.status as "Pending" | "In Progress" | "Completed");
+    }
+
+    loadData();
+
+    return () => {
+      clearSelectedItem();
+    };
+  }, [id, isOnline, loadWorkOrderById, clearSelectedItem, navigation]);
+
   async function handleSave() {
+    if (!title.trim() || !description.trim() || !assignedTo.trim()) {
+      Alert.alert("Atenção", "Preencha todos os campos obrigatórios.");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
@@ -47,7 +82,7 @@ export function Edit() {
   }
 
   return (
-    <Container backgroundColor="#F8F9FA">
+    <Container loading={loading} backgroundColor="#F8F9FA">
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -56,7 +91,9 @@ export function Edit() {
           <Text style={styles.eyebrow}>FIELDSYNC</Text>
           <Text style={styles.title}>Editar ordem</Text>
           <Text style={styles.subtitle}>
-            Atualize os dados da ordem de serviço localmente.
+            {isOnline
+              ? "Dados carregados da API e sincronizados localmente."
+              : "Dados carregados do armazenamento local."}
           </Text>
         </View>
 

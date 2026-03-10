@@ -8,18 +8,27 @@ import {
   UpdateWorkOrderPayload,
 } from "@/domain/workOrders/payloads";
 import {
+  fetchAndCacheWorkOrderById,
   fetchAndCacheWorkOrders,
+  getLocalWorkOrderById,
   getLocalWorkOrders,
 } from "@/services/workOrders.service";
 
 type WorkOrdersStore = {
   items: LocalWorkOrder[];
+  selectedItem: LocalWorkOrder | null;
   loading: boolean;
   error: string | null;
 
   loadFromRealm: () => Promise<void>;
   loadFromApi: () => Promise<void>;
   loadWorkOrders: (isOnline: boolean) => Promise<void>;
+
+  loadWorkOrderById: (
+    id: string,
+    isOnline: boolean,
+  ) => Promise<LocalWorkOrder | null>;
+  clearSelectedItem: () => void;
 
   createLocal: (input: CreateWorkOrderPayload) => Promise<void>;
   updateLocal: (id: string, input: UpdateWorkOrderPayload) => Promise<void>;
@@ -33,17 +42,17 @@ function generateId() {
 
 export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
   items: [],
+  selectedItem: null,
   loading: false,
   error: null,
 
   clearError: () => set({ error: null }),
+  clearSelectedItem: () => set({ selectedItem: null }),
 
   loadFromRealm: async () => {
     try {
       set({ loading: true, error: null });
-
       const items = await getLocalWorkOrders();
-
       set({ items, loading: false });
     } catch {
       set({
@@ -56,14 +65,10 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
   loadFromApi: async () => {
     try {
       set({ loading: true, error: null });
-
       const items = await fetchAndCacheWorkOrders();
-
       set({ items, loading: false });
     } catch (error: any) {
       console.log("Erro real no loadFromApi:", error?.message);
-      console.log("Stack:", error?.stack);
-
       set({
         loading: false,
         error: "Erro ao carregar ordens da API.",
@@ -78,6 +83,28 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
     }
 
     await useWorkOrdersStore.getState().loadFromRealm();
+  },
+
+  loadWorkOrderById: async (id, isOnline) => {
+    try {
+      set({ loading: true, error: null });
+
+      const item = isOnline
+        ? await fetchAndCacheWorkOrderById(id)
+        : await getLocalWorkOrderById(id);
+
+      set({ selectedItem: item, loading: false });
+
+      return item;
+    } catch (error: any) {
+      console.log("Erro ao carregar ordem por id:", error?.message);
+      set({
+        selectedItem: null,
+        loading: false,
+        error: "Erro ao carregar ordem de serviço.",
+      });
+      return null;
+    }
   },
 
   createLocal: async (input) => {
@@ -139,6 +166,8 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
         item.syncStatus = "pending";
       });
 
+      const updatedItem = realm.objectForPrimaryKey<any>("WorkOrder", id);
+
       const results = realm
         .objects("WorkOrder")
         .filtered("deleted == false")
@@ -146,6 +175,7 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
 
       set({
         items: results.map((item) => mapRealmWorkOrder(item)),
+        selectedItem: updatedItem ? mapRealmWorkOrder(updatedItem) : null,
         error: null,
       });
     } catch {
@@ -177,6 +207,7 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
 
       set({
         items: results.map((item) => mapRealmWorkOrder(item)),
+        selectedItem: null,
         error: null,
       });
     } catch {
