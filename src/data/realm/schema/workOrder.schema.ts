@@ -1,14 +1,10 @@
-import {
-  WorkOrderStatus,
-  WorkOrderSyncStatus,
-} from "@/domain/workOrders/types";
 import Realm from "realm";
 
-export class WorkOrderSchema extends Realm.Object<WorkOrderSchema> {
+export class WorkOrder extends Realm.Object<WorkOrder> {
   id!: string;
   title!: string;
   description!: string;
-  status!: WorkOrderStatus;
+  status!: string;
   assignedTo!: string;
   createdAt!: string;
   updatedAt!: string;
@@ -16,7 +12,7 @@ export class WorkOrderSchema extends Realm.Object<WorkOrderSchema> {
   completed!: boolean;
   deleted!: boolean;
   dirty!: boolean;
-  syncStatus!: WorkOrderSyncStatus;
+  syncStatus!: string;
 
   static primaryKey = "id";
 }

@@ -1,7 +1,6 @@
-export type WorkOrderStatus = "Pending" | "In Progress" | "Completed";
-export type WorkOrderSyncStatus = "synced" | "pending" | "error";
+import { WorkOrderStatus } from "@/domain/workOrders/types";
 
-export type WorkOrder = {
+export type WorkOrderDTO = {
   id: string;
   title: string;
   description: string;

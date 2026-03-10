@@ -1,17 +1,21 @@
-import { HeaderBackButton } from "@/components/HeaderBackButton";
-import { FontAwesome } from "@expo/vector-icons";
 import {
   BottomTabNavigationProp,
   createBottomTabNavigator,
 } from "@react-navigation/bottom-tabs";
+
+import { HeaderBackButton } from "@/components/HeaderBackButton";
+import { Feather, FontAwesome } from "@expo/vector-icons";
+
 import { THEME } from "@theme/index";
 import React from "react";
 
 //Routes
+import { Add } from "@ui/screens/Add";
 import { Home } from "@ui/screens/Home";
 
 export type AppRoutes = {
   home: undefined;
+  add: undefined;
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
@@ -54,6 +58,26 @@ export function AppBottomRoutes() {
           tabBarIcon: ({ focused }) => (
             <FontAwesome
               name="home"
+              size={24}
+              color={focused ? THEME.colors.green800 : THEME.colors.gray600}
+            />
+          ),
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontFamily: THEME.fonts.body,
+          },
+        }}
+      />
+
+      <Screen
+        name="add"
+        component={Add}
+        options={{
+          title: "Adicionar",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <Feather
+              name="plus"
               size={24}
               color={focused ? THEME.colors.green800 : THEME.colors.gray600}
             />

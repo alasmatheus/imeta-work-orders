@@ -1,14 +1,15 @@
-import { THEME } from "@theme/index";
 import React from "react";
 import {
-  View,
+  StyleSheet,
   Text,
   TextInput,
-  StyleSheet,
-  TouchableOpacity,
+  TextInputProps,
+  View,
 } from "react-native";
 
-type Props = {
+import { THEME } from "@theme/index";
+
+type Props = TextInputProps & {
   errorMessage?: string | null;
   isInvalid?: boolean;
   showIconPass?: boolean;

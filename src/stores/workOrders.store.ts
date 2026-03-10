@@ -1,25 +1,28 @@
-import { mapRealmWorkOrder } from "@data/realm/mappers";
-import { getRealm } from "@data/realm/realm";
-import { WorkOrder, WorkOrderStatus } from "@domain/workOrders/types";
 import { create } from "zustand";
 
-type CreateWorkOrderInput = {
-  title: string;
-  description: string;
-  status: WorkOrderStatus;
-  assignedTo: string;
-};
-
-type UpdateWorkOrderInput = Partial<CreateWorkOrderInput>;
+import { mapRealmWorkOrder } from "@/data/realm/mappers";
+import { getRealm } from "@/data/realm/realm";
+import { LocalWorkOrder } from "@/domain/workOrders/localWorkOrder";
+import {
+  CreateWorkOrderPayload,
+  UpdateWorkOrderPayload,
+} from "@/domain/workOrders/payloads";
+import {
+  fetchAndCacheWorkOrders,
+  getLocalWorkOrders,
+} from "@/services/workOrders.service";
 
 type WorkOrdersStore = {
-  items: WorkOrder[];
+  items: LocalWorkOrder[];
   loading: boolean;
   error: string | null;
 
   loadFromRealm: () => Promise<void>;
-  createLocal: (input: CreateWorkOrderInput) => Promise<void>;
-  updateLocal: (id: string, input: UpdateWorkOrderInput) => Promise<void>;
+  loadFromApi: () => Promise<void>;
+  loadWorkOrders: (isOnline: boolean) => Promise<void>;
+
+  createLocal: (input: CreateWorkOrderPayload) => Promise<void>;
+  updateLocal: (id: string, input: UpdateWorkOrderPayload) => Promise<void>;
   softDeleteLocal: (id: string) => Promise<void>;
   clearError: () => void;
 };
@@ -38,23 +41,36 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
   loadFromRealm: async () => {
     try {
       set({ loading: true, error: null });
-
-      const realm = await getRealm();
-
-      const results = realm
-        .objects("WorkOrder")
-        .filtered("deleted == false")
-        .sorted("updatedAt", true);
-
-      const items = results.map(mapRealmWorkOrder);
-
+      const items = await getLocalWorkOrders();
       set({ items, loading: false });
-    } catch (error) {
+    } catch {
       set({
         loading: false,
-        error: "Erro ao carregar ordens de serviço locais.",
+        error: "Erro ao carregar ordens locais.",
       });
     }
+  },
+
+  loadFromApi: async () => {
+    try {
+      set({ loading: true, error: null });
+      const items = await fetchAndCacheWorkOrders();
+      set({ items, loading: false });
+    } catch {
+      set({
+        loading: false,
+        error: "Erro ao carregar ordens da API.",
+      });
+    }
+  },
+
+  loadWorkOrders: async (isOnline: boolean) => {
+    if (isOnline) {
+      await useWorkOrdersStore.getState().loadFromApi();
+      return;
+    }
+
+    await useWorkOrdersStore.getState().loadFromRealm();
   },
 
   createLocal: async (input) => {
@@ -83,8 +99,11 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
         .filtered("deleted == false")
         .sorted("updatedAt", true);
 
-      set({ items: results.map(mapRealmWorkOrder), error: null });
-    } catch (error) {
+      set({
+        items: results.map((item) => mapRealmWorkOrder(item)),
+        error: null,
+      });
+    } catch {
       set({ error: "Erro ao criar ordem de serviço localmente." });
     }
   },
@@ -118,8 +137,11 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
         .filtered("deleted == false")
         .sorted("updatedAt", true);
 
-      set({ items: results.map(mapRealmWorkOrder), error: null });
-    } catch (error) {
+      set({
+        items: results.map((item) => mapRealmWorkOrder(item)),
+        error: null,
+      });
+    } catch {
       set({ error: "Erro ao atualizar ordem de serviço localmente." });
     }
   },
@@ -146,8 +168,11 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
         .filtered("deleted == false")
         .sorted("updatedAt", true);
 
-      set({ items: results.map(mapRealmWorkOrder), error: null });
-    } catch (error) {
+      set({
+        items: results.map((item) => mapRealmWorkOrder(item)),
+        error: null,
+      });
+    } catch {
       set({ error: "Erro ao remover ordem de serviço localmente." });
     }
   },

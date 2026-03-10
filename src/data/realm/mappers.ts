@@ -1,6 +1,6 @@
-import { WorkOrder } from "@domain/workOrders/types";
+import { LocalWorkOrder } from "@/domain/workOrders/localWorkOrder";
 
-export function mapRealmWorkOrder(item: any): WorkOrder {
+export function mapRealmWorkOrder(item: any): LocalWorkOrder {
   return {
     id: item.id,
     title: item.title,
