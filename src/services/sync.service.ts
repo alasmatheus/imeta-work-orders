@@ -116,14 +116,36 @@ async function pushLocalChanges() {
           assignedTo: item.assignedTo,
         });
 
+        let finalRemote = created;
+
+        const localStatusNeedsUpdate =
+          item.status !== "Pending" ||
+          item.completed !== false ||
+          item.deleted !== false ||
+          !!item.deletedAt;
+
+        if (localStatusNeedsUpdate) {
+          finalRemote = await WorkOrdersAPI.update(created.id, {
+            title: item.title,
+            description: item.description,
+            assignedTo: item.assignedTo,
+            status: item.status,
+            completed: item.completed,
+            deleted: item.deleted,
+            deletedAt: item.deletedAt,
+          });
+        }
+
         const realm = await getRealm();
+
         const normalized = mapDTOToLocalWorkOrder({
-          ...created,
-          id: normalizeId((created as any).id),
-        } as any);
+          ...finalRemote,
+          id: normalizeId(finalRemote.id),
+        });
 
         realm.write(() => {
-          const oldItem = realm.objectForPrimaryKey<any>("WorkOrder", item.id);
+          const oldItem = realm.objectForPrimaryKey("WorkOrder", item.id);
+
           if (oldItem) {
             realm.delete(oldItem);
           }
