@@ -1,6 +1,15 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import {
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 
 import { Container } from "@/components/Container";
 import { WorkOrderForm } from "@/components/WorkOrderForm";
@@ -83,61 +92,70 @@ export function Edit() {
 
   return (
     <Container loading={loading} backgroundColor={THEME.colors.background}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 20}
       >
-        <View style={styles.header}>
-          <Text style={styles.eyebrow}>INMETA</Text>
-          <Text style={styles.title}>Editar ordem</Text>
-          <Text style={styles.subtitle}>
-            Atualize os dados da ordem armazenada localmente.
-          </Text>
-        </View>
-
-        <View
-          style={[
-            styles.infoCard,
-            isOnline ? styles.infoCardOnline : styles.infoCardOffline,
-          ]}
-        >
-          <Text
-            style={[
-              styles.infoTitle,
-              isOnline ? styles.infoTitleOnline : styles.infoTitleOffline,
-            ]}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            {isOnline ? "Modo online" : "Modo offline"}
-          </Text>
+            <View style={styles.header}>
+              <Text style={styles.eyebrow}>INMETA</Text>
+              <Text style={styles.title}>Editar ordem</Text>
+              <Text style={styles.subtitle}>
+                Atualize os dados da ordem armazenada localmente.
+              </Text>
+            </View>
 
-          <Text
-            style={[
-              styles.infoText,
-              isOnline ? styles.infoTextOnline : styles.infoTextOffline,
-            ]}
-          >
-            {isOnline
-              ? "Os dados foram carregados do fluxo sincronizado e as alterações serão salvas localmente antes do próximo sync."
-              : "Os dados foram carregados do armazenamento local e continuarão disponíveis mesmo sem conexão."}
-          </Text>
-        </View>
+            <View
+              style={[
+                styles.infoCard,
+                isOnline ? styles.infoCardOnline : styles.infoCardOffline,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.infoTitle,
+                  isOnline ? styles.infoTitleOnline : styles.infoTitleOffline,
+                ]}
+              >
+                {isOnline ? "Modo online" : "Modo offline"}
+              </Text>
 
-        <View style={styles.card}>
-          <WorkOrderForm
-            title={title}
-            description={description}
-            assignedTo={assignedTo}
-            status={status}
-            isSubmitting={isSubmitting}
-            submitLabel="Salvar alterações"
-            onChangeTitle={setTitle}
-            onChangeDescription={setDescription}
-            onChangeAssignedTo={setAssignedTo}
-            onChangeStatus={setStatus}
-            onSubmit={handleSave}
-          />
-        </View>
-      </ScrollView>
+              <Text
+                style={[
+                  styles.infoText,
+                  isOnline ? styles.infoTextOnline : styles.infoTextOffline,
+                ]}
+              >
+                {isOnline
+                  ? "Os dados foram carregados do fluxo sincronizado e as alterações serão salvas localmente antes do próximo sync."
+                  : "Os dados foram carregados do armazenamento local e continuarão disponíveis mesmo sem conexão."}
+              </Text>
+            </View>
+
+            <View style={styles.card}>
+              <WorkOrderForm
+                title={title}
+                description={description}
+                assignedTo={assignedTo}
+                status={status}
+                isSubmitting={isSubmitting}
+                submitLabel="Salvar alterações"
+                onChangeTitle={setTitle}
+                onChangeDescription={setDescription}
+                onChangeAssignedTo={setAssignedTo}
+                onChangeStatus={setStatus}
+                onSubmit={handleSave}
+              />
+            </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </Container>
   );
 }

@@ -1,6 +1,15 @@
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import {
+  Alert,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 
 import { Container } from "@/components/Container";
 import { WorkOrderForm } from "@/components/WorkOrderForm";
@@ -71,43 +80,52 @@ export function Add() {
 
   return (
     <Container backgroundColor={THEME.colors.background}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 20}
       >
-        <View style={styles.header}>
-          <Text style={styles.eyebrow}>INMETA</Text>
-          <Text style={styles.title}>Nova ordem de serviço</Text>
-          <Text style={styles.subtitle}>
-            Cadastre uma nova ordem para armazenamento local no Realm e
-            sincronização futura.
-          </Text>
-        </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.header}>
+              <Text style={styles.eyebrow}>INMETA</Text>
+              <Text style={styles.title}>Nova ordem de serviço</Text>
+              <Text style={styles.subtitle}>
+                Cadastre uma nova ordem para armazenamento local no Realm e
+                sincronização futura.
+              </Text>
+            </View>
 
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>Criação local</Text>
-          <Text style={styles.infoText}>
-            Esta ordem será salva imediatamente no dispositivo e poderá ser
-            sincronizada quando houver conexão.
-          </Text>
-        </View>
+            <View style={styles.infoCard}>
+              <Text style={styles.infoTitle}>Criação local</Text>
+              <Text style={styles.infoText}>
+                Esta ordem será salva imediatamente no dispositivo e poderá ser
+                sincronizada quando houver conexão.
+              </Text>
+            </View>
 
-        <View style={styles.card}>
-          <WorkOrderForm
-            title={title}
-            description={description}
-            assignedTo={assignedTo}
-            status={status}
-            isSubmitting={isSubmitting}
-            submitLabel="Criar ordem"
-            onChangeTitle={setTitle}
-            onChangeDescription={setDescription}
-            onChangeAssignedTo={setAssignedTo}
-            onChangeStatus={setStatus}
-            onSubmit={handleSubmit}
-          />
-        </View>
-      </ScrollView>
+            <View style={styles.card}>
+              <WorkOrderForm
+                title={title}
+                description={description}
+                assignedTo={assignedTo}
+                status={status}
+                isSubmitting={isSubmitting}
+                submitLabel="Criar ordem"
+                onChangeTitle={setTitle}
+                onChangeDescription={setDescription}
+                onChangeAssignedTo={setAssignedTo}
+                onChangeStatus={setStatus}
+                onSubmit={handleSubmit}
+              />
+            </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </Container>
   );
 }

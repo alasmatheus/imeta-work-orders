@@ -10,8 +10,9 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 32,
     backgroundColor: THEME.colors.background,
+    flexGrow: 1,
   },
-
+  flex: { flex: 1 },
   header: {
     marginBottom: 14,
   },
