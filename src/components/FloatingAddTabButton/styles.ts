@@ -4,9 +4,10 @@ import { THEME } from "@/theme";
 
 export const styles = StyleSheet.create({
   wrapper: {
-    top: Platform.OS === "ios" ? -20 : -24,
+    top: Platform.OS === "ios" ? -22 : -26,
     justifyContent: "center",
     alignItems: "center",
+    width: 80,
   },
 
   button: {
@@ -23,12 +24,5 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 5,
-  },
-
-  label: {
-    marginTop: 2,
-    fontSize: 11,
-    fontFamily: THEME.fonts.semiBold,
-    color: THEME.colors.text,
   },
 });

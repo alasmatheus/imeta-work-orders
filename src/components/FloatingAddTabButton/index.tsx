@@ -1,9 +1,8 @@
 import { Feather } from "@expo/vector-icons";
 import {
-    GestureResponderEvent,
-    Text,
-    TouchableOpacity,
-    View,
+  GestureResponderEvent,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 import { THEME } from "@/theme";
@@ -20,8 +19,6 @@ export function FloatingAddTabButton({ onPress }: FloatingAddTabButtonProps) {
         <View style={styles.button}>
           <Feather name="plus" size={28} color={THEME.colors.white} />
         </View>
-
-        <Text style={styles.label}>Add</Text>
       </View>
     </TouchableOpacity>
   );
