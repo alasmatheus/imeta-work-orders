@@ -1,15 +1,16 @@
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import {
   BottomTabNavigationProp,
   createBottomTabNavigator,
 } from "@react-navigation/bottom-tabs";
+import React from "react";
+import { Platform } from "react-native";
 
 import { HeaderBackButton } from "@/components/HeaderBackButton";
-import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
-
 import { THEME } from "@theme/index";
-import React from "react";
 
-//Routes
+// Routes
+import { FloatingAddTabButton } from "@/components/FloatingAddTabButton";
 import { Add } from "@ui/screens/Add";
 import { Edit } from "@ui/screens/Edit";
 import { Home } from "@ui/screens/Home";
@@ -26,7 +27,7 @@ export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
 
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
 
-const iconSize = 24;
+const iconSize = 22;
 
 export function AppBottomRoutes() {
   return (
@@ -37,20 +38,30 @@ export function AppBottomRoutes() {
         headerRight: () => null,
         headerLeft: () => <HeaderBackButton />,
         headerShadowVisible: false,
-        headerTintColor: THEME.colors.black,
+        headerTintColor: THEME.colors.text,
         headerTitleAlign: "left",
         headerTitleStyle: {
           fontFamily: THEME.fonts.bold,
           fontSize: 20,
           textAlign: "center",
         },
-        tabBarActiveTintColor: THEME.colors.green800,
-        tabBarInactiveTintColor: THEME.colors.gray600,
+        tabBarActiveTintColor: THEME.colors.primary,
+        tabBarInactiveTintColor: THEME.colors.textMuted,
         tabBarStyle: {
-          backgroundColor: THEME.colors.white,
+          backgroundColor: THEME.colors.card,
           borderTopWidth: 0,
-          height: 64,
-          paddingBottom: 10,
+          height: Platform.OS === "ios" ? 84 : 74,
+          paddingBottom: Platform.OS === "ios" ? 18 : 10,
+          paddingTop: 8,
+          shadowColor: THEME.colors.black,
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: -2 },
+          elevation: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontFamily: THEME.fonts.body,
         },
       }}
       backBehavior="history"
@@ -61,17 +72,14 @@ export function AppBottomRoutes() {
         options={{
           title: "Home",
           headerShown: false,
+          tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
             <FontAwesome
               name="home"
               size={iconSize}
-              color={focused ? THEME.colors.green800 : THEME.colors.gray600}
+              color={focused ? THEME.colors.primary : THEME.colors.textMuted}
             />
           ),
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: THEME.fonts.body,
-          },
         }}
       />
 
@@ -81,17 +89,11 @@ export function AppBottomRoutes() {
         options={{
           title: "Adicionar",
           headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <Feather
-              name="plus"
-              size={iconSize}
-              color={focused ? THEME.colors.green800 : THEME.colors.gray600}
-            />
+          tabBarLabel: "",
+          tabBarIcon: () => null,
+          tabBarButton: (props) => (
+            <FloatingAddTabButton onPress={props.onPress} />
           ),
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: THEME.fonts.body,
-          },
         }}
       />
 
@@ -101,22 +103,17 @@ export function AppBottomRoutes() {
         options={{
           title: "Relatórios",
           headerShown: false,
+          tabBarLabel: "Reports",
           tabBarIcon: ({ focused }) => (
             <Ionicons
-              name="documents"
+              name="bar-chart"
               size={iconSize}
-              color={focused ? THEME.colors.green800 : THEME.colors.gray600}
+              color={focused ? THEME.colors.primary : THEME.colors.textMuted}
             />
           ),
-
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: THEME.fonts.body,
-          },
         }}
       />
 
-      {/* Rotas “ocultas” sem botão na tab bar */}
       <Screen
         name="edit"
         component={Edit}
