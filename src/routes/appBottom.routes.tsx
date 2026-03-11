@@ -17,7 +17,7 @@ import { Home } from "@ui/screens/Home";
 export type AppRoutes = {
   home: undefined;
   add: undefined;
-  edit: string;
+  edit: { id: string };
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;

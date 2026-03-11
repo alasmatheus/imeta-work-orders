@@ -36,7 +36,7 @@ export const WorkOrdersAPI = {
   async sync(since: string): Promise<{
     created: WorkOrderDTO[];
     updated: WorkOrderDTO[];
-    deleted: number[];
+    deleted: Array<string | number>;
   }> {
     const { data } = await api.get("/work-orders/sync", {
       params: { since },

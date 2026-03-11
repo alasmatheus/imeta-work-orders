@@ -20,15 +20,17 @@ export const styles = StyleSheet.create({
   loadingInner: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    borderRadius: 16,
-    backgroundColor: THEME.colors.white,
-    minWidth: 140,
+    borderRadius: 18,
+    backgroundColor: THEME.colors.card,
+    minWidth: 150,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: THEME.colors.border,
   },
 
   loadingText: {
     fontFamily: THEME.fonts.semiBold,
     fontSize: 14,
-    color: THEME.colors.black,
+    color: THEME.colors.text,
   },
 });

@@ -18,7 +18,7 @@ export function HeaderBackButton() {
       style={[styles.button, Platform.OS === "android" && styles.buttonAndroid]}
       onPress={handleGoBack}
     >
-      <Ionicons name="chevron-back" size={24} color={THEME.colors.black} />
+      <Ionicons name="chevron-back" size={22} color={THEME.colors.primary} />
     </TouchableOpacity>
   );
 }

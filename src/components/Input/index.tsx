@@ -21,15 +21,17 @@ export function Input({
   errorMessage = null,
   nameLabel,
   isRequired = false,
-  colorLabel = THEME.colors.black,
-  colorTextInput = THEME.colors.black,
+  colorLabel = THEME.colors.text,
+  colorTextInput = THEME.colors.text,
   InputRightElement,
-  borderColor = "#DADCE0",
+  borderColor = THEME.colors.border,
   height = 49,
-  borderRadius = 12,
+  borderRadius = 14,
   style,
   ...rest
 }: Props) {
+  const resolvedBorderColor = errorMessage ? THEME.colors.danger : borderColor;
+
   return (
     <View>
       {nameLabel && (
@@ -46,12 +48,13 @@ export function Input({
             {
               height,
               borderRadius,
-              borderColor,
+              borderColor: resolvedBorderColor,
               color: colorTextInput,
             },
             style,
           ]}
-          placeholderTextColor="gray"
+          placeholderTextColor={THEME.colors.textMuted}
+          textAlignVertical={rest.multiline ? "top" : "center"}
           {...rest}
         />
 

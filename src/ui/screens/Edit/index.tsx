@@ -15,7 +15,6 @@ export function Edit() {
 
   const isOnline = useSyncStore((state) => state.isOnline);
 
-  const selectedItem = useWorkOrdersStore((state) => state.selectedItem);
   const loading = useWorkOrdersStore((state) => state.loading);
   const loadWorkOrderById = useWorkOrdersStore(
     (state) => state.loadWorkOrderById,
@@ -82,18 +81,43 @@ export function Edit() {
   }
 
   return (
-    <Container loading={loading} backgroundColor="#F8F9FA">
+    <Container loading={loading} backgroundColor="#F6F8F7">
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.eyebrow}>FIELDSYNC</Text>
+          <Text style={styles.eyebrow}>INMETA</Text>
           <Text style={styles.title}>Editar ordem</Text>
           <Text style={styles.subtitle}>
+            Atualize os dados da ordem armazenada localmente.
+          </Text>
+        </View>
+
+        <View
+          style={[
+            styles.infoCard,
+            isOnline ? styles.infoCardOnline : styles.infoCardOffline,
+          ]}
+        >
+          <Text
+            style={[
+              styles.infoTitle,
+              isOnline ? styles.infoTitleOnline : styles.infoTitleOffline,
+            ]}
+          >
+            {isOnline ? "Modo online" : "Modo offline"}
+          </Text>
+
+          <Text
+            style={[
+              styles.infoText,
+              isOnline ? styles.infoTextOnline : styles.infoTextOffline,
+            ]}
+          >
             {isOnline
-              ? "Dados carregados da API e sincronizados localmente."
-              : "Dados carregados do armazenamento local."}
+              ? "Os dados foram carregados do fluxo sincronizado e as alterações serão salvas localmente antes do próximo sync."
+              : "Os dados foram carregados do armazenamento local e continuarão disponíveis mesmo sem conexão."}
           </Text>
         </View>
 

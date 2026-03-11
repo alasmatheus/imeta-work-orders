@@ -31,13 +31,13 @@ export function Button({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.85}
+      activeOpacity={0.88}
       style={[
         styles.button,
         {
-          backgroundColor: bgColor ?? THEME.colors.green800,
+          backgroundColor: bgColor ?? THEME.colors.primary,
           width: widthButton,
-          opacity: isDisabled ? 0.7 : 1,
+          opacity: isDisabled ? 0.65 : 1,
         },
         style,
       ]}

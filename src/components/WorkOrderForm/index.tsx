@@ -19,6 +19,19 @@ type Props = {
   onSubmit: () => void;
 };
 
+function getStatusLabel(option: "Pending" | "In Progress" | "Completed") {
+  switch (option) {
+    case "Pending":
+      return "Pendente";
+    case "In Progress":
+      return "Em andamento";
+    case "Completed":
+      return "Concluída";
+    default:
+      return option;
+  }
+}
+
 export function WorkOrderForm({
   title,
   description,
@@ -40,8 +53,6 @@ export function WorkOrderForm({
         value={title}
         onChangeText={onChangeTitle}
         placeholder="Ex: Reconexão de cabos do switch"
-        colorLabel="black"
-        colorTextInput="black"
       />
 
       <View style={styles.spacer} />
@@ -52,10 +63,9 @@ export function WorkOrderForm({
         value={description}
         onChangeText={onChangeDescription}
         placeholder="Descreva o serviço a ser realizado"
-        colorLabel="black"
-        colorTextInput="black"
         multiline
         height={120}
+        style={styles.multilineInput}
       />
 
       <View style={styles.spacer} />
@@ -66,8 +76,6 @@ export function WorkOrderForm({
         value={assignedTo}
         onChangeText={onChangeAssignedTo}
         placeholder="Ex: Luiz Alberto"
-        colorLabel="black"
-        colorTextInput="black"
       />
 
       <View style={styles.spacer} />
@@ -81,10 +89,19 @@ export function WorkOrderForm({
           return (
             <TouchableOpacity
               key={option}
-              activeOpacity={0.85}
+              activeOpacity={0.88}
               style={[
                 styles.statusButton,
                 selected && styles.statusButtonSelected,
+                option === "Pending" &&
+                  selected &&
+                  styles.statusButtonSelectedPending,
+                option === "In Progress" &&
+                  selected &&
+                  styles.statusButtonSelectedInProgress,
+                option === "Completed" &&
+                  selected &&
+                  styles.statusButtonSelectedCompleted,
               ]}
               onPress={() => onChangeStatus(option)}
             >
@@ -92,13 +109,18 @@ export function WorkOrderForm({
                 style={[
                   styles.statusButtonText,
                   selected && styles.statusButtonTextSelected,
+                  option === "Pending" &&
+                    selected &&
+                    styles.statusButtonTextSelectedPending,
+                  option === "In Progress" &&
+                    selected &&
+                    styles.statusButtonTextSelectedInProgress,
+                  option === "Completed" &&
+                    selected &&
+                    styles.statusButtonTextSelectedCompleted,
                 ]}
               >
-                {option === "Pending"
-                  ? "Pendente"
-                  : option === "In Progress"
-                    ? "Em andamento"
-                    : "Concluída"}
+                {getStatusLabel(option)}
               </Text>
             </TouchableOpacity>
           );

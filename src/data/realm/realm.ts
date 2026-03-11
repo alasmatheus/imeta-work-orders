@@ -2,9 +2,9 @@ import Realm from "realm";
 import { SyncMeta } from "./schema/syncMeta.schema";
 import { WorkOrder } from "./schema/workOrder.schema";
 
-export const realmConfig: Realm.Configuration = {
+const realmConfig: Realm.Configuration = {
   schema: [WorkOrder, SyncMeta],
-  schemaVersion: 1,
+  schemaVersion: 2,
 };
 
 let realmInstance: Realm | null = null;

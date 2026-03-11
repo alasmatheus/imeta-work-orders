@@ -9,10 +9,13 @@ export class WorkOrder extends Realm.Object<WorkOrder> {
   createdAt!: string;
   updatedAt!: string;
   deletedAt?: string;
-  completed!: boolean;
-  deleted!: boolean;
-  dirty!: boolean;
-  syncStatus!: string;
+
+  completed: boolean = false;
+  deleted: boolean = false;
+
+  dirty: boolean = false;
+  syncStatus: string = "synced";
+  pendingAction?: string;
 
   static primaryKey = "id";
 }

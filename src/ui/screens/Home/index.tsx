@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
-  Modal,
   RefreshControl,
   Text,
   TouchableOpacity,
@@ -12,8 +11,13 @@ import {
 } from "react-native";
 
 import { Container } from "@/components/Container";
+import { getLastSyncAt, runSync } from "@/services/sync.service";
 import { useSyncStore } from "@/stores/sync.store";
 import { useWorkOrdersStore } from "@/stores/workOrders.store";
+import { formatDateTime } from "@/utils/date";
+import { SyncBadge } from "./componentes/SyncBadge";
+import { SyncStatusCard } from "./componentes/SyncStatusCard";
+import { WorkOrderDetailsModal } from "./componentes/WorkOrderDetailsModal";
 import { styles } from "./styles";
 
 function getStatusLabel(status: string) {
@@ -42,7 +46,14 @@ function getSyncLabel(syncStatus: string) {
 
 export function Home() {
   const navigation = useNavigation<any>();
+
   const isOnline = useSyncStore((state) => state.isOnline);
+  const isSyncing = useSyncStore((state) => state.isSyncing);
+  const lastSyncAt = useSyncStore((state) => state.lastSyncAt);
+  const syncError = useSyncStore((state) => state.syncError);
+  const setSyncing = useSyncStore((state) => state.setSyncing);
+  const setSyncError = useSyncStore((state) => state.setSyncError);
+  const setLastSyncAt = useSyncStore((state) => state.setLastSyncAt);
 
   const items = useWorkOrdersStore((state) => state.items);
   const loading = useWorkOrdersStore((state) => state.loading);
@@ -54,8 +65,27 @@ export function Home() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   useEffect(() => {
-    loadWorkOrders(isOnline);
-  }, [isOnline, loadWorkOrders]);
+    loadWorkOrders();
+  }, [loadWorkOrders]);
+
+  async function handleManualSync() {
+    if (!isOnline || isSyncing) return;
+
+    try {
+      setSyncing(true);
+      setSyncError(null);
+
+      await runSync();
+      await loadWorkOrders();
+
+      const syncDate = await getLastSyncAt();
+      setLastSyncAt(syncDate);
+    } catch {
+      setSyncError("Não foi possível sincronizar agora.");
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   function handleOpenDetails(item: any) {
     setSelectedItem(item);
@@ -67,33 +97,34 @@ export function Home() {
     setIsDetailsModalOpen(false);
   }
 
-  async function handleRemove(item: any) {
+  function handleNavigateEdit(itemId: string) {
+    handleCloseDetails();
+    navigation.navigate("edit", { id: itemId });
+  }
+
+  function handleRemove(item: any) {
     Alert.alert("Remover ordem", `Deseja remover a ordem "${item.title}"?`, [
-      {
-        text: "Cancelar",
-        style: "cancel",
-      },
+      { text: "Cancelar", style: "cancel" },
       {
         text: "Remover",
         style: "destructive",
-        onPress: () => deleteLocal(item.id),
+        onPress: async () => {
+          await softDeleteLocal(item.id);
+          handleCloseDetails();
+        },
       },
     ]);
   }
 
-  async function deleteLocal(item: string) {
-    await softDeleteLocal(item);
-  }
-
   return (
-    <Container loading={loading} backgroundColor="#F8F9FA">
+    <Container loading={loading} backgroundColor="#F6F8F7">
       <View style={styles.wrapper}>
-        <View style={[styles.header, styles.headerRow]}>
-          <View>
-            <Text style={styles.eyebrow}>FieldSync</Text>
+        <View style={styles.headerRow}>
+          <View style={styles.headerContent}>
+            <Text style={styles.eyebrow}>INMETA</Text>
             <Text style={styles.title}>Ordens de serviço</Text>
             <Text style={styles.subtitle}>
-              Visualize e acompanhe as ordens disponíveis.
+              Dados locais armazenados no Realm.
             </Text>
           </View>
 
@@ -126,7 +157,7 @@ export function Home() {
           <View style={styles.bannerWarning}>
             <Text style={styles.bannerWarningTitle}>Modo offline</Text>
             <Text style={styles.bannerWarningText}>
-              Exibindo dados salvos localmente. Novas alterações serão
+              As alterações continuam disponíveis localmente e serão
               sincronizadas quando a conexão voltar.
             </Text>
           </View>
@@ -138,29 +169,25 @@ export function Home() {
           </View>
         )}
 
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryBlock}>
-            <Text style={styles.summaryLabel}>Total</Text>
-            <Text style={styles.summaryValue}>{items.length}</Text>
-          </View>
-
-          <View style={styles.summaryDivider} />
-
-          <View style={styles.summaryBlock}>
-            <Text style={styles.summaryLabel}>Fonte</Text>
-            <Text style={styles.summaryValueSmall}>
-              {isOnline ? "API + cache local" : "Realm local"}
-            </Text>
-          </View>
+        <View style={styles.syncCardWrapper}>
+          <SyncStatusCard
+            isOnline={isOnline}
+            isSyncing={isSyncing}
+            lastSyncAt={lastSyncAt}
+            syncError={syncError}
+            onSync={handleManualSync}
+          />
         </View>
 
         <FlatList
           data={items}
+          showsVerticalScrollIndicator={false}
           keyExtractor={(item) => item.id}
           refreshControl={
             <RefreshControl
-              refreshing={loading}
-              onRefresh={() => loadWorkOrders(isOnline)}
+              refreshing={loading || isSyncing}
+              onRefresh={() => loadWorkOrders()}
+              tintColor="#0B6B50"
             />
           }
           contentContainerStyle={[
@@ -179,7 +206,7 @@ export function Home() {
           }
           renderItem={({ item }) => (
             <TouchableOpacity
-              activeOpacity={0.92}
+              activeOpacity={0.96}
               style={styles.cardItem}
               onPress={() => handleOpenDetails(item)}
             >
@@ -194,7 +221,7 @@ export function Home() {
                     activeOpacity={0.8}
                     onPress={() => navigation.navigate("edit", { id: item.id })}
                   >
-                    <Feather name="edit-2" size={18} color="#1967D2" />
+                    <Feather name="edit-2" size={17} color="#0B6B50" />
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -204,151 +231,73 @@ export function Home() {
                   >
                     <MaterialIcons
                       name="delete-outline"
-                      size={20}
-                      color="#D93025"
+                      size={19}
+                      color="#F05A28"
                     />
                   </TouchableOpacity>
                 </View>
               </View>
 
-              <View
-                style={[
-                  styles.badge,
-                  item.status === "Completed"
-                    ? styles.badgeCompleted
-                    : item.status === "In Progress"
-                      ? styles.badgeInProgress
-                      : styles.badgePending,
-                ]}
-              >
-                <Text
+              <View style={styles.badgesRow}>
+                <View
                   style={[
-                    styles.badgeText,
+                    styles.badge,
                     item.status === "Completed"
-                      ? styles.badgeTextCompleted
+                      ? styles.badgeCompleted
                       : item.status === "In Progress"
-                        ? styles.badgeTextInProgress
-                        : styles.badgeTextPending,
+                        ? styles.badgeInProgress
+                        : styles.badgePending,
                   ]}
                 >
-                  {getStatusLabel(item.status)}
-                </Text>
+                  <Text
+                    style={[
+                      styles.badgeText,
+                      item.status === "Completed"
+                        ? styles.badgeTextCompleted
+                        : item.status === "In Progress"
+                          ? styles.badgeTextInProgress
+                          : styles.badgeTextPending,
+                    ]}
+                  >
+                    {getStatusLabel(item.status)}
+                  </Text>
+                </View>
+
+                <SyncBadge syncStatus={item.syncStatus} />
               </View>
 
               <Text style={styles.cardDescription} numberOfLines={2}>
                 {item.description}
               </Text>
 
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Técnico</Text>
-                <Text style={styles.metaValue}>{item.assignedTo}</Text>
-              </View>
+              <View style={styles.metaGrid}>
+                <View style={styles.metaColumn}>
+                  <Text style={styles.metaLabel}>Técnico</Text>
+                  <Text style={styles.metaValueLeft} numberOfLines={1}>
+                    {item.assignedTo}
+                  </Text>
+                </View>
 
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>Sincronização</Text>
-                <Text style={styles.metaValue}>
-                  {getSyncLabel(item.syncStatus)}
-                </Text>
+                <View style={styles.metaColumn}>
+                  <Text style={styles.metaLabel}>Atualizada</Text>
+                  <Text style={styles.metaValueRight}>
+                    {formatDateTime(item.updatedAt)}
+                  </Text>
+                </View>
               </View>
             </TouchableOpacity>
           )}
         />
       </View>
 
-      <Modal
+      <WorkOrderDetailsModal
         visible={isDetailsModalOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={handleCloseDetails}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Detalhes da ordem</Text>
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.modalCloseButton}
-                onPress={handleCloseDetails}
-              >
-                <Feather name="x" size={20} color="#202124" />
-              </TouchableOpacity>
-            </View>
-
-            {selectedItem && (
-              <>
-                <View style={styles.detailBlock}>
-                  <Text style={styles.detailLabel}>Título</Text>
-                  <Text style={styles.detailValue}>{selectedItem.title}</Text>
-                </View>
-
-                <View style={styles.detailBlock}>
-                  <Text style={styles.detailLabel}>Descrição</Text>
-                  <Text style={styles.detailValue}>
-                    {selectedItem.description}
-                  </Text>
-                </View>
-
-                <View style={styles.detailBlock}>
-                  <Text style={styles.detailLabel}>Status</Text>
-                  <Text style={styles.detailValue}>
-                    {getStatusLabel(selectedItem.status)}
-                  </Text>
-                </View>
-
-                <View style={styles.detailBlock}>
-                  <Text style={styles.detailLabel}>Técnico</Text>
-                  <Text style={styles.detailValue}>
-                    {selectedItem.assignedTo}
-                  </Text>
-                </View>
-
-                <View style={styles.detailBlock}>
-                  <Text style={styles.detailLabel}>Criada em</Text>
-                  <Text style={styles.detailValue}>
-                    {selectedItem.createdAt}
-                  </Text>
-                </View>
-
-                <View style={styles.detailBlock}>
-                  <Text style={styles.detailLabel}>Atualizada em</Text>
-                  <Text style={styles.detailValue}>
-                    {selectedItem.updatedAt}
-                  </Text>
-                </View>
-
-                <View style={styles.detailBlock}>
-                  <Text style={styles.detailLabel}>Sincronização</Text>
-                  <Text style={styles.detailValue}>
-                    {getSyncLabel(selectedItem.syncStatus)}
-                  </Text>
-                </View>
-
-                <View style={styles.modalFooter}>
-                  <TouchableOpacity
-                    style={styles.modalSecondaryButton}
-                    activeOpacity={0.85}
-                    onPress={handleCloseDetails}
-                  >
-                    <Text style={styles.modalSecondaryButtonText}>Fechar</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.modalPrimaryButton}
-                    activeOpacity={0.85}
-                    onPress={() => {
-                      handleCloseDetails();
-                      navigation.navigate("edit", { id: selectedItem.id });
-                    }}
-                  >
-                    <Text style={styles.modalPrimaryButtonText}>Editar</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
+        item={selectedItem}
+        onClose={handleCloseDetails}
+        onEdit={handleNavigateEdit}
+        getStatusLabel={getStatusLabel}
+        getSyncLabel={getSyncLabel}
+      />
     </Container>
   );
 }

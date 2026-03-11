@@ -22,8 +22,7 @@ type WorkOrdersStore = {
 
   loadFromRealm: () => Promise<void>;
   loadFromApi: () => Promise<void>;
-  loadWorkOrders: (isOnline: boolean) => Promise<void>;
-
+  loadWorkOrders: () => Promise<void>;
   loadWorkOrderById: (
     id: string,
     isOnline: boolean,
@@ -76,12 +75,7 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
     }
   },
 
-  loadWorkOrders: async (isOnline: boolean) => {
-    if (isOnline) {
-      await useWorkOrdersStore.getState().loadFromApi();
-      return;
-    }
-
+  loadWorkOrders: async () => {
     await useWorkOrdersStore.getState().loadFromRealm();
   },
 
@@ -125,6 +119,7 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
           deleted: false,
           dirty: true,
           syncStatus: "pending",
+          pendingAction: "create",
         });
       });
 
@@ -164,6 +159,10 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
         item.updatedAt = now;
         item.dirty = true;
         item.syncStatus = "pending";
+
+        if (item.pendingAction !== "create") {
+          item.pendingAction = "update";
+        }
       });
 
       const updatedItem = realm.objectForPrimaryKey<any>("WorkOrder", id);
@@ -193,11 +192,17 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
 
         if (!item) return;
 
+        if (item.pendingAction === "create") {
+          realm.delete(item);
+          return;
+        }
+
         item.deleted = true;
         item.deletedAt = now;
         item.updatedAt = now;
         item.dirty = true;
         item.syncStatus = "pending";
+        item.pendingAction = "delete";
       });
 
       const results = realm

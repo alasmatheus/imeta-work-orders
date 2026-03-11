@@ -7,9 +7,9 @@ export const styles = StyleSheet.create({
 
   wrapper: {
     flex: 1,
-    paddingTop: 24,
-    paddingHorizontal: 20,
-    backgroundColor: "#F8F9FA",
+    paddingTop: 18,
+    paddingHorizontal: 16,
+    backgroundColor: THEME.colors.background,
   },
 
   headerRow: {
@@ -17,10 +17,16 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     gap: 12,
+    marginBottom: 10,
+  },
+
+  headerContent: {
+    flex: 1,
+    paddingRight: 12,
   },
 
   statusChip: {
-    minHeight: 36,
+    minHeight: 34,
     borderRadius: 18,
     paddingHorizontal: 12,
     flexDirection: "row",
@@ -30,13 +36,13 @@ export const styles = StyleSheet.create({
   },
 
   statusChipOnline: {
-    backgroundColor: "#E6F4EA",
-    borderColor: "#CEEAD6",
+    backgroundColor: THEME.colors.successLight,
+    borderColor: THEME.colors.onlineBorder,
   },
 
   statusChipOffline: {
-    backgroundColor: "#FCE8E6",
-    borderColor: "#F6C7C3",
+    backgroundColor: THEME.colors.warningLight,
+    borderColor: THEME.colors.offlineBorder,
   },
 
   statusDot: {
@@ -46,11 +52,11 @@ export const styles = StyleSheet.create({
   },
 
   statusDotOnline: {
-    backgroundColor: "#188038",
+    backgroundColor: THEME.colors.success,
   },
 
   statusDotOffline: {
-    backgroundColor: "#D93025",
+    backgroundColor: THEME.colors.warning,
   },
 
   statusChipText: {
@@ -59,96 +65,53 @@ export const styles = StyleSheet.create({
   },
 
   statusChipTextOnline: {
-    color: "#188038",
+    color: THEME.colors.success,
   },
 
   statusChipTextOffline: {
-    color: "#D93025",
+    color: THEME.colors.warning,
+  },
+
+  syncCardWrapper: {
+    marginBottom: 8,
   },
 
   bannerWarning: {
-    backgroundColor: "#FFF4E5",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: THEME.colors.warningLight,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#FAD7A0",
+    borderColor: THEME.colors.offlineBorder,
   },
 
   bannerWarningTitle: {
     fontFamily: THEME.fonts.semiBold,
-    fontSize: 14,
-    color: "#B06000",
+    fontSize: 13,
+    color: THEME.colors.warning,
     marginBottom: 4,
   },
 
   bannerWarningText: {
     fontFamily: THEME.fonts.body,
-    fontSize: 13,
-    color: "#8A4B00",
-    lineHeight: 19,
+    fontSize: 12,
+    color: THEME.colors.warning,
+    lineHeight: 18,
   },
 
   bannerError: {
-    backgroundColor: "#FCE8E6",
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 16,
+    backgroundColor: THEME.colors.dangerLight,
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#F4C7C3",
+    borderColor: THEME.colors.offlineBorder,
   },
 
   bannerErrorText: {
     fontFamily: THEME.fonts.body,
     fontSize: 13,
-    color: "#B3261E",
-  },
-
-  summaryCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    padding: 18,
-    marginBottom: 18,
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ECEFF1",
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
-  },
-
-  summaryBlock: {
-    flex: 1,
-  },
-
-  summaryLabel: {
-    fontFamily: THEME.fonts.body,
-    fontSize: 12,
-    color: "#5F6368",
-    marginBottom: 6,
-    textTransform: "uppercase",
-  },
-
-  summaryValue: {
-    fontFamily: THEME.fonts.bold,
-    fontSize: 24,
-    color: "#202124",
-  },
-
-  summaryValueSmall: {
-    fontFamily: THEME.fonts.semiBold,
-    fontSize: 14,
-    color: "#202124",
-  },
-
-  summaryDivider: {
-    width: 1,
-    height: 44,
-    backgroundColor: "#ECEFF1",
-    marginHorizontal: 16,
+    color: THEME.colors.danger,
   },
 
   listContent: {
@@ -161,18 +124,18 @@ export const styles = StyleSheet.create({
   },
 
   emptyCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: THEME.colors.card,
     borderRadius: 24,
     padding: 24,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ECEFF1",
+    borderColor: THEME.colors.border,
   },
 
   emptyTitle: {
     fontFamily: THEME.fonts.semiBold,
     fontSize: 16,
-    color: "#202124",
+    color: THEME.colors.text,
     marginBottom: 8,
     textAlign: "center",
   },
@@ -180,23 +143,23 @@ export const styles = StyleSheet.create({
   emptyText: {
     fontFamily: THEME.fonts.body,
     fontSize: 14,
-    color: "#5F6368",
+    color: THEME.colors.textMuted,
     textAlign: "center",
     lineHeight: 20,
   },
 
   cardItem: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    padding: 18,
-    marginBottom: 14,
+    backgroundColor: THEME.colors.card,
+    borderRadius: 22,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#ECEFF1",
+    borderColor: "#D9E5DF",
     shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 1,
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
   },
 
   cardHeader: {
@@ -207,40 +170,25 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
+  cardHeaderRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+
   cardTitle: {
     flex: 1,
-    fontFamily: THEME.fonts.semiBold,
-    fontSize: 16,
-    color: "#202124",
+    fontFamily: THEME.fonts.bold,
+    fontSize: 18,
+    color: THEME.colors.text,
   },
 
-  cardDescription: {
-    fontFamily: THEME.fonts.body,
-    fontSize: 14,
-    color: "#5F6368",
-    lineHeight: 20,
-    marginBottom: 14,
-  },
-
-  metaRow: {
+  badgesRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-    marginBottom: 6,
-  },
-
-  metaLabel: {
-    fontFamily: THEME.fonts.body,
-    fontSize: 13,
-    color: "#5F6368",
-  },
-
-  metaValue: {
-    flex: 1,
-    textAlign: "right",
-    fontFamily: THEME.fonts.semiBold,
-    fontSize: 13,
-    color: "#202124",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 10,
+    flexWrap: "wrap",
   },
 
   badge: {
@@ -250,15 +198,15 @@ export const styles = StyleSheet.create({
   },
 
   badgePending: {
-    backgroundColor: "#FEF7E0",
+    backgroundColor: THEME.colors.warningLight,
   },
 
   badgeInProgress: {
-    backgroundColor: "#E8F0FE",
+    backgroundColor: THEME.colors.primaryLight,
   },
 
   badgeCompleted: {
-    backgroundColor: "#E6F4EA",
+    backgroundColor: THEME.colors.successLight,
   },
 
   badgeText: {
@@ -267,20 +215,57 @@ export const styles = StyleSheet.create({
   },
 
   badgeTextPending: {
-    color: "#B06000",
+    color: THEME.colors.warning,
   },
 
   badgeTextInProgress: {
-    color: "#1967D2",
+    color: THEME.colors.primary,
   },
 
   badgeTextCompleted: {
-    color: "#188038",
+    color: THEME.colors.success,
   },
-  cardHeaderRight: {
+
+  cardDescription: {
+    fontFamily: THEME.fonts.body,
+    fontSize: 13,
+    color: THEME.colors.textMuted,
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+
+  metaGrid: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+    justifyContent: "space-between",
+    gap: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#EDF2EF",
+  },
+
+  metaColumn: {
+    flex: 1,
+  },
+
+  metaLabel: {
+    fontFamily: THEME.fonts.body,
+    fontSize: 12,
+    color: THEME.colors.textMuted,
+    marginBottom: 4,
+  },
+
+  metaValueLeft: {
+    fontFamily: THEME.fonts.semiBold,
+    fontSize: 14,
+    color: THEME.colors.text,
+    textAlign: "left",
+  },
+
+  metaValueRight: {
+    fontFamily: THEME.fonts.semiBold,
+    fontSize: 13,
+    color: THEME.colors.text,
+    textAlign: "right",
   },
 
   iconButton: {
@@ -289,103 +274,8 @@ export const styles = StyleSheet.create({
     borderRadius: 17,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#F8F9FA",
+    backgroundColor: "#F8FBF9",
     borderWidth: 1,
-    borderColor: "#ECEFF1",
-  },
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-
-  modalCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: "#ECEFF1",
-  },
-
-  modalHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 18,
-  },
-
-  modalTitle: {
-    flex: 1,
-    fontFamily: THEME.fonts.bold,
-    fontSize: 20,
-    color: "#202124",
-  },
-
-  modalCloseButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F8F9FA",
-  },
-
-  detailBlock: {
-    marginBottom: 14,
-  },
-
-  detailLabel: {
-    fontFamily: THEME.fonts.semiBold,
-    fontSize: 12,
-    color: "#5F6368",
-    textTransform: "uppercase",
-    marginBottom: 4,
-  },
-
-  detailValue: {
-    fontFamily: THEME.fonts.body,
-    fontSize: 14,
-    color: "#202124",
-    lineHeight: 20,
-  },
-
-  modalFooter: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 12,
-  },
-
-  modalSecondaryButton: {
-    flex: 1,
-    height: 44,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F8F9FA",
-    borderWidth: 1,
-    borderColor: "#DADCE0",
-  },
-
-  modalSecondaryButtonText: {
-    fontFamily: THEME.fonts.semiBold,
-    fontSize: 14,
-    color: "#202124",
-  },
-
-  modalPrimaryButton: {
-    flex: 1,
-    height: 44,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#1967D2",
-  },
-
-  modalPrimaryButtonText: {
-    fontFamily: THEME.fonts.semiBold,
-    fontSize: 14,
-    color: "#FFFFFF",
+    borderColor: THEME.colors.border,
   },
 });

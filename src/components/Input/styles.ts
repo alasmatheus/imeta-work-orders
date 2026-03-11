@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
   labelContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 6,
   },
 
   label: {
@@ -14,14 +14,15 @@ export const styles = StyleSheet.create({
   },
 
   requiredText: {
-    fontSize: 18,
-    color: "red",
+    fontSize: 16,
+    color: THEME.colors.warning,
     marginLeft: 4,
-    lineHeight: 18,
+    lineHeight: 16,
   },
 
   input: {
     paddingHorizontal: 16,
+    paddingVertical: 12,
     borderWidth: 1,
     fontSize: 14,
     fontFamily: THEME.fonts.body,
@@ -29,9 +30,10 @@ export const styles = StyleSheet.create({
   },
 
   errorText: {
-    color: "red",
-    marginTop: 4,
+    color: THEME.colors.danger,
+    marginTop: 5,
     fontSize: 12,
+    fontFamily: THEME.fonts.body,
   },
 
   iconContainer: {

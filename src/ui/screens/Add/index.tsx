@@ -69,16 +69,25 @@ export function Add() {
   }
 
   return (
-    <Container backgroundColor="#F8F9FA">
+    <Container backgroundColor="#F6F8F7">
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.eyebrow}>FIELDSYNC</Text>
+          <Text style={styles.eyebrow}>INMETA</Text>
           <Text style={styles.title}>Nova ordem de serviço</Text>
           <Text style={styles.subtitle}>
-            Cadastre uma nova ordem para uso local e sincronização futura.
+            Cadastre uma nova ordem para armazenamento local no Realm e
+            sincronização futura.
+          </Text>
+        </View>
+
+        <View style={styles.infoCard}>
+          <Text style={styles.infoTitle}>Criação local</Text>
+          <Text style={styles.infoText}>
+            Esta ordem será salva imediatamente no dispositivo e poderá ser
+            sincronizada quando houver conexão.
           </Text>
         </View>
 
