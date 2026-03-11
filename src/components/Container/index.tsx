@@ -25,7 +25,7 @@ export interface ContainerProps extends ViewProps {
 }
 
 export function Container({
-  backgroundColor = "#FFFFFF",
+  backgroundColor,
   children,
   enableKeyboardDismissHandler = false,
   avoidKeyboard = false,

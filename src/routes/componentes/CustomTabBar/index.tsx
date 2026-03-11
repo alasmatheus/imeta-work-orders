@@ -6,11 +6,7 @@ import { THEME } from "@/theme";
 import { FloatingAddTabButton } from "../FloatingAddTabButton/index";
 import { styles } from "./styles";
 
-export function CustomTabBar({
-  state,
-  descriptors,
-  navigation,
-}: BottomTabBarProps) {
+export function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const goTo = (routeName: string) => {
     navigation.navigate(routeName as never);
   };

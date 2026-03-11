@@ -1,6 +1,6 @@
 import { ScrollView, Text, TouchableOpacity } from "react-native";
 
-import { AppModal } from "@/components/Modal";
+import { AppModal } from "@/components/AppModal";
 import { styles } from "./styles";
 
 type TechnicianSelectModalProps = {

@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
 
-import { AppModal } from "@/components/Modal";
+import { AppModal } from "@/components/AppModal";
 import { formatDateTime } from "@/utils/date";
 import { styles } from "./styles";
 

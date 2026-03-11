@@ -9,7 +9,6 @@ import {
 } from "@/domain/workOrders/payloads";
 import {
   fetchAndCacheWorkOrderById,
-  fetchAndCacheWorkOrders,
   getLocalWorkOrderById,
   getLocalWorkOrders,
 } from "@/services/workOrders.service";
@@ -21,7 +20,6 @@ type WorkOrdersStore = {
   error: string | null;
 
   loadFromRealm: () => Promise<void>;
-  loadFromApi: () => Promise<void>;
   loadWorkOrders: () => Promise<void>;
   loadWorkOrderById: (
     id: string,
@@ -61,20 +59,6 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
     }
   },
 
-  loadFromApi: async () => {
-    try {
-      set({ loading: true, error: null });
-      const items = await fetchAndCacheWorkOrders();
-      set({ items, loading: false });
-    } catch (error: any) {
-      console.log("Erro real no loadFromApi:", error?.message);
-      set({
-        loading: false,
-        error: "Erro ao carregar ordens da API.",
-      });
-    }
-  },
-
   loadWorkOrders: async () => {
     await useWorkOrdersStore.getState().loadFromRealm();
   },
@@ -91,7 +75,6 @@ export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({
 
       return item;
     } catch (error: any) {
-      console.log("Erro ao carregar ordem por id:", error?.message);
       set({
         selectedItem: null,
         loading: false,

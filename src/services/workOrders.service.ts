@@ -31,38 +31,6 @@ export async function getLocalWorkOrderById(
   return mapRealmWorkOrder(item);
 }
 
-export async function fetchAndCacheWorkOrders(): Promise<LocalWorkOrder[]> {
-  const apiItems = await WorkOrdersAPI.getAll();
-  const realm = await getRealm();
-
-  realm.write(() => {
-    apiItems.forEach((item) => {
-      const normalized = mapDTOToLocalWorkOrder({
-        ...item,
-        id: normalizeId(item.id),
-      } as any);
-
-      const existing = realm.objectForPrimaryKey<any>(
-        "WorkOrder",
-        normalized.id,
-      );
-
-      if (existing?.dirty) {
-        return;
-      }
-
-      realm.create("WorkOrder", normalized, Realm.UpdateMode.Modified);
-    });
-  });
-
-  const results = realm
-    .objects("WorkOrder")
-    .filtered("deleted == false")
-    .sorted("updatedAt", true);
-
-  return results.map((item) => mapRealmWorkOrder(item));
-}
-
 export async function fetchAndCacheWorkOrderById(
   id: string,
 ): Promise<LocalWorkOrder | null> {
