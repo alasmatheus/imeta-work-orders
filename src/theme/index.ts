@@ -2,6 +2,7 @@ export const THEME: any = {
   colors: {
     black: "#000000",
     white: "#FFFFFF",
+    gray: "#5F6368",
 
     background: "#F6F8F7",
     card: "#FFFFFF",
@@ -37,19 +38,5 @@ export const THEME: any = {
     semiBold: "Raleway_600SemiBold",
     bold: "Raleway_700Bold",
     light: "Raleway_300Light",
-  },
-
-  fontSizes: {
-    m9: 9,
-    m10: 10,
-    m11: 11,
-    xs: 12,
-    sm: 14,
-    m15: 15,
-    md: 16,
-    lg: 18,
-    xl: 20,
-    xl1: 24,
-    titleScreen: 24,
   },
 };

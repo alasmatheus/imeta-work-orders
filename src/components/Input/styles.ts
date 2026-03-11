@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   },
 
   label: {
-    fontSize: THEME.fontSizes.xs,
+    fontSize: 12,
     fontFamily: THEME.fonts.semiBold,
   },
 

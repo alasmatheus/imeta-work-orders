@@ -6,6 +6,7 @@ import { Container } from "@/components/Container";
 import { WorkOrderForm } from "@/components/WorkOrderForm";
 import { useSyncStore } from "@/stores/sync.store";
 import { useWorkOrdersStore } from "@/stores/workOrders.store";
+import { THEME } from "@/theme";
 import { styles } from "./styles";
 
 export function Edit() {
@@ -81,7 +82,7 @@ export function Edit() {
   }
 
   return (
-    <Container loading={loading} backgroundColor="#F6F8F7">
+    <Container loading={loading} backgroundColor={THEME.colors.background}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

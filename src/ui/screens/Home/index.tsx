@@ -14,6 +14,7 @@ import { Container } from "@/components/Container";
 import { getLastSyncAt, runSync } from "@/services/sync.service";
 import { useSyncStore } from "@/stores/sync.store";
 import { useWorkOrdersStore } from "@/stores/workOrders.store";
+import { THEME } from "@/theme";
 import { formatDateTime } from "@/utils/date";
 import { SyncBadge } from "./componentes/SyncBadge";
 import { SyncStatusCard } from "./componentes/SyncStatusCard";
@@ -117,7 +118,7 @@ export function Home() {
   }
 
   return (
-    <Container loading={loading} backgroundColor="#F6F8F7">
+    <Container loading={loading} backgroundColor={THEME.colors.background}>
       <View style={styles.wrapper}>
         <View style={styles.headerRow}>
           <View style={styles.headerContent}>
@@ -187,7 +188,7 @@ export function Home() {
             <RefreshControl
               refreshing={loading || isSyncing}
               onRefresh={() => loadWorkOrders()}
-              tintColor="#0B6B50"
+              tintColor={THEME.colors.primary}
             />
           }
           contentContainerStyle={[
@@ -221,7 +222,11 @@ export function Home() {
                     activeOpacity={0.8}
                     onPress={() => navigation.navigate("edit", { id: item.id })}
                   >
-                    <Feather name="edit-2" size={17} color="#0B6B50" />
+                    <Feather
+                      name="edit-2"
+                      size={17}
+                      color={THEME.colors.primary}
+                    />
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -232,7 +237,7 @@ export function Home() {
                     <MaterialIcons
                       name="delete-outline"
                       size={19}
-                      color="#F05A28"
+                      color={THEME.colors.danger}
                     />
                   </TouchableOpacity>
                 </View>

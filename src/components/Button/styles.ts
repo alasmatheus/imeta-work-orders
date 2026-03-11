@@ -24,6 +24,6 @@ export const styles = StyleSheet.create({
 
   buttonText: {
     fontFamily: THEME.fonts.bold,
-    fontSize: THEME.fontSizes.md,
+    fontSize: 16,
   },
 });

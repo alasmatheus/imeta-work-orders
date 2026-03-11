@@ -6,7 +6,7 @@ export const screenStyles = StyleSheet.create({
     padding: 20,
     paddingTop: 24,
     paddingBottom: 40,
-    backgroundColor: "#F8F9FA",
+    backgroundColor: THEME.colors.background,
   },
 
   header: {
@@ -16,7 +16,7 @@ export const screenStyles = StyleSheet.create({
   eyebrow: {
     fontFamily: THEME.fonts.semiBold,
     fontSize: 12,
-    color: "#5F6368",
+    color: THEME.colors.gray,
     textTransform: "uppercase",
     letterSpacing: 0.8,
     marginBottom: 6,
@@ -25,24 +25,24 @@ export const screenStyles = StyleSheet.create({
   title: {
     fontFamily: THEME.fonts.bold,
     fontSize: 28,
-    color: "#202124",
+    color: THEME.colors.black,
     marginBottom: 6,
   },
 
   subtitle: {
     fontFamily: THEME.fonts.body,
     fontSize: 14,
-    color: "#5F6368",
+    color: THEME.colors.gray,
     lineHeight: 20,
   },
 
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: THEME.colors.white,
     borderRadius: 24,
     padding: 18,
     borderWidth: 1,
-    borderColor: "#ECEFF1",
-    shadowColor: "#000",
+    borderColor: THEME.colors.border,
+    shadowColor: THEME.colors.black,
     shadowOpacity: 0.05,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },

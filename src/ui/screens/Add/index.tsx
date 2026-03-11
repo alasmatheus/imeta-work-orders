@@ -6,6 +6,7 @@ import { Container } from "@/components/Container";
 import { WorkOrderForm } from "@/components/WorkOrderForm";
 import { AppNavigatorRoutesProps } from "@/routes/appBottom.routes";
 import { useWorkOrdersStore } from "@/stores/workOrders.store";
+import { THEME } from "@/theme";
 import { styles } from "./styles";
 
 export function Add() {
@@ -69,7 +70,7 @@ export function Add() {
   }
 
   return (
-    <Container backgroundColor="#F6F8F7">
+    <Container backgroundColor={THEME.colors.background}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
