@@ -1,28 +1,44 @@
+import { LocalWorkOrder } from "./localWorkOrder";
 import { WorkOrder } from "./types";
 
-type ResolveConflictParams = {
-  local: WorkOrder;
-  remote: WorkOrder;
-};
+export type ConflictResolution =
+  | { type: "use_local" }
+  | { type: "use_remote"; remote: WorkOrder }
+  | { type: "delete_local" };
 
-export function resolveWorkOrderConflict({
-  local,
-  remote,
-}: ResolveConflictParams): WorkOrder {
-  const localUpdatedAt = new Date(local.updatedAt).getTime();
-  const remoteUpdatedAt = new Date(remote.updatedAt).getTime();
+function safeTimestamp(value?: string | null): number {
+  if (!value) return 0;
 
-  if (remoteUpdatedAt > localUpdatedAt) {
-    return {
-      ...remote,
-      dirty: false,
-      syncStatus: "synced",
-    };
+  const timestamp = new Date(value).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
+export function resolveWorkOrderConflict(
+  local: LocalWorkOrder,
+  remote: WorkOrder | null,
+): ConflictResolution {
+  if (!remote) {
+    return { type: "use_local" };
   }
 
-  return {
-    ...local,
-    dirty: true,
-    syncStatus: "pending",
-  };
+  if (remote.deleted) {
+    return { type: "delete_local" };
+  }
+
+  if (!local.dirty) {
+    return { type: "use_remote", remote };
+  }
+
+  if (local.pendingAction === "delete") {
+    return { type: "delete_local" };
+  }
+
+  const localUpdatedAt = safeTimestamp(local.updatedAt);
+  const remoteUpdatedAt = safeTimestamp(remote.updatedAt);
+
+  if (remoteUpdatedAt > localUpdatedAt) {
+    return { type: "use_remote", remote };
+  }
+
+  return { type: "use_local" };
 }

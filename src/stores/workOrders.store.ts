@@ -36,7 +36,7 @@ type WorkOrdersStore = {
 };
 
 function generateId() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  return `local-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export const useWorkOrdersStore = create<WorkOrdersStore>((set) => ({

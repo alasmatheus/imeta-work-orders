@@ -2,13 +2,68 @@ import Realm from "realm";
 
 import { mapDTOToLocalWorkOrder, normalizeId } from "@/data/realm/mappers";
 import { getRealm } from "@/data/realm/realm";
+import {
+  ConflictResolution,
+  resolveWorkOrderConflict,
+} from "@/domain/workOrders/conflict";
 import { LocalWorkOrder } from "@/domain/workOrders/localWorkOrder";
+import { WorkOrder } from "@/domain/workOrders/types";
 import { WorkOrdersAPI } from "@/services/workOrders.api";
 
 const LAST_SYNC_KEY = "lastSyncAt";
 
 function getNowIso() {
   return new Date().toISOString();
+}
+
+function mapRealmObjectToLocalWorkOrder(item: any): LocalWorkOrder {
+  return {
+    id: String(item.id),
+    title: item.title,
+    description: item.description,
+    status: item.status,
+    assignedTo: item.assignedTo,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+    deletedAt: item.deletedAt,
+    completed: item.completed,
+    deleted: item.deleted,
+    dirty: item.dirty,
+    syncStatus: item.syncStatus,
+    pendingAction: item.pendingAction ?? null,
+  };
+}
+
+function applyRemoteToRealmObject(target: any, remote: WorkOrder) {
+  target.id = String(remote.id);
+  target.title = remote.title;
+  target.description = remote.description;
+  target.status = remote.status;
+  target.assignedTo = remote.assignedTo;
+  target.createdAt = remote.createdAt;
+  target.updatedAt = remote.updatedAt;
+  target.deletedAt = remote.deletedAt;
+  target.completed = remote.completed;
+  target.deleted = remote.deleted;
+  target.dirty = false;
+  target.syncStatus = "synced";
+  target.pendingAction = null;
+}
+
+function applyConflictResolution(
+  realm: Realm,
+  existing: any,
+  resolution: ConflictResolution,
+) {
+  if (resolution.type === "use_remote") {
+    applyRemoteToRealmObject(existing, resolution.remote);
+    return;
+  }
+
+  if (resolution.type === "delete_local") {
+    realm.delete(existing);
+    return;
+  }
 }
 
 async function getLastSyncAtFromRealm(): Promise<string | null> {
@@ -40,24 +95,10 @@ async function getPendingItems(): Promise<LocalWorkOrder[]> {
     .filtered("dirty == true")
     .sorted("updatedAt", false);
 
-  return results.map((item: any) => ({
-    id: String(item.id),
-    title: item.title,
-    description: item.description,
-    status: item.status,
-    assignedTo: item.assignedTo,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-    deletedAt: item.deletedAt,
-    completed: item.completed,
-    deleted: item.deleted,
-    dirty: item.dirty,
-    syncStatus: item.syncStatus,
-    pendingAction: item.pendingAction ?? null,
-  }));
+  return results.map((item: any) => mapRealmObjectToLocalWorkOrder(item));
 }
 
-async function markAsSynced(id: string, remoteData?: any) {
+async function markAsSynced(id: string, remoteData?: WorkOrder) {
   const realm = await getRealm();
 
   realm.write(() => {
@@ -65,15 +106,8 @@ async function markAsSynced(id: string, remoteData?: any) {
     if (!item) return;
 
     if (remoteData) {
-      item.title = remoteData.title;
-      item.description = remoteData.description;
-      item.status = remoteData.status;
-      item.assignedTo = remoteData.assignedTo;
-      item.createdAt = remoteData.createdAt;
-      item.updatedAt = remoteData.updatedAt;
-      item.deletedAt = remoteData.deletedAt;
-      item.completed = remoteData.completed;
-      item.deleted = remoteData.deleted;
+      applyRemoteToRealmObject(item, remoteData);
+      return;
     }
 
     item.dirty = false;
@@ -125,7 +159,7 @@ async function pushLocalChanges() {
           !!item.deletedAt;
 
         if (localStatusNeedsUpdate) {
-          finalRemote = await WorkOrdersAPI.update(created.id, {
+          finalRemote = await WorkOrdersAPI.update(normalizeId(created.id), {
             title: item.title,
             description: item.description,
             assignedTo: item.assignedTo,
@@ -144,7 +178,7 @@ async function pushLocalChanges() {
         });
 
         realm.write(() => {
-          const oldItem = realm.objectForPrimaryKey("WorkOrder", item.id);
+          const oldItem = realm.objectForPrimaryKey<any>("WorkOrder", item.id);
 
           if (oldItem) {
             realm.delete(oldItem);
@@ -169,7 +203,7 @@ async function pushLocalChanges() {
 
         await markAsSynced(item.id, {
           ...updated,
-          id: normalizeId((updated as any).id),
+          id: normalizeId(updated.id),
         });
 
         continue;
@@ -182,7 +216,7 @@ async function pushLocalChanges() {
       }
 
       await markAsSynced(item.id);
-    } catch (error: any) {
+    } catch {
       await markAsError(item.id);
     }
   }
@@ -194,7 +228,7 @@ async function pullRemoteChanges() {
   const realm = await getRealm();
 
   realm.write(() => {
-    syncResponse.created.forEach((item: any) => {
+    syncResponse.created.forEach((item) => {
       const normalized = mapDTOToLocalWorkOrder({
         ...item,
         id: normalizeId(item.id),
@@ -205,48 +239,40 @@ async function pullRemoteChanges() {
         normalized.id,
       );
 
-      if (existing?.dirty) return;
-
-      realm.create("WorkOrder", normalized, Realm.UpdateMode.Modified);
-    });
-
-    syncResponse.updated.forEach((item: any) => {
-      const normalized = mapDTOToLocalWorkOrder({
-        ...item,
-        id: normalizeId(item.id),
-      });
-
-      const existing = realm.objectForPrimaryKey<any>(
-        "WorkOrder",
-        normalized.id,
-      );
-
-      if (existing?.dirty) {
-        const localUpdatedAt = new Date(existing.updatedAt).getTime();
-        const remoteUpdatedAt = new Date(normalized.updatedAt).getTime();
-
-        if (remoteUpdatedAt > localUpdatedAt) {
-          existing.title = normalized.title;
-          existing.description = normalized.description;
-          existing.status = normalized.status;
-          existing.assignedTo = normalized.assignedTo;
-          existing.createdAt = normalized.createdAt;
-          existing.updatedAt = normalized.updatedAt;
-          existing.deletedAt = normalized.deletedAt;
-          existing.completed = normalized.completed;
-          existing.deleted = normalized.deleted;
-          existing.dirty = false;
-          existing.syncStatus = "synced";
-          existing.pendingAction = null;
-        }
-
+      if (!existing) {
+        realm.create("WorkOrder", normalized, Realm.UpdateMode.Modified);
         return;
       }
 
-      realm.create("WorkOrder", normalized, Realm.UpdateMode.Modified);
+      const localItem = mapRealmObjectToLocalWorkOrder(existing);
+      const resolution = resolveWorkOrderConflict(localItem, normalized);
+
+      applyConflictResolution(realm, existing, resolution);
     });
 
-    syncResponse.deleted.forEach((deletedId: string | number) => {
+    syncResponse.updated.forEach((item) => {
+      const normalized = mapDTOToLocalWorkOrder({
+        ...item,
+        id: normalizeId(item.id),
+      });
+
+      const existing = realm.objectForPrimaryKey<any>(
+        "WorkOrder",
+        normalized.id,
+      );
+
+      if (!existing) {
+        realm.create("WorkOrder", normalized, Realm.UpdateMode.Modified);
+        return;
+      }
+
+      const localItem = mapRealmObjectToLocalWorkOrder(existing);
+      const resolution = resolveWorkOrderConflict(localItem, normalized);
+
+      applyConflictResolution(realm, existing, resolution);
+    });
+
+    syncResponse.deleted.forEach((deletedId) => {
       const normalizedId = normalizeId(deletedId);
       const existing = realm.objectForPrimaryKey<any>(
         "WorkOrder",
@@ -254,9 +280,28 @@ async function pullRemoteChanges() {
       );
 
       if (!existing) return;
-      if (existing.dirty) return;
 
-      realm.delete(existing);
+      const localItem = mapRealmObjectToLocalWorkOrder(existing);
+
+      const remoteDeletedVersion: WorkOrder = {
+        id: normalizedId,
+        title: localItem.title,
+        description: localItem.description,
+        status: localItem.status,
+        assignedTo: localItem.assignedTo,
+        createdAt: localItem.createdAt,
+        updatedAt: getNowIso(),
+        deletedAt: getNowIso(),
+        completed: localItem.completed,
+        deleted: true,
+      };
+
+      const resolution = resolveWorkOrderConflict(
+        localItem,
+        remoteDeletedVersion,
+      );
+
+      applyConflictResolution(realm, existing, resolution);
     });
   });
 

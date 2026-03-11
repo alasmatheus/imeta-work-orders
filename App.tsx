@@ -1,4 +1,3 @@
-// App.tsx
 import { useNetworkMonitor } from "@/hooks/useNetworkMonitor";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
