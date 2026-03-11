@@ -8,6 +8,7 @@ import {
   View,
   ViewProps,
 } from "react-native";
+import { Edge } from "react-native-safe-area-context";
 
 import { styles } from "./styles";
 
@@ -21,7 +22,7 @@ export interface ContainerProps extends ViewProps {
   loading?: boolean;
   loadingMessage?: string;
   loadingVariant?: "normal" | "save" | "progressBar";
-  edges?: any;
+  edges?: Edge[];
 }
 
 export function Container({

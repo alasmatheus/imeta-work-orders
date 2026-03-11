@@ -1,3 +1,4 @@
+import { WorkOrder } from "@/data/realm/schema/workOrder.schema";
 import { LocalWorkOrder } from "@/domain/workOrders/localWorkOrder";
 import {
   PendingAction,
@@ -20,7 +21,7 @@ export function mapDTOToLocalWorkOrder(dto: WorkOrderDTO): LocalWorkOrder {
   };
 }
 
-export function mapRealmWorkOrder(item: any): LocalWorkOrder {
+export function mapRealmWorkOrder(item: WorkOrder): LocalWorkOrder {
   return {
     id: String(item.id),
     title: item.title,
