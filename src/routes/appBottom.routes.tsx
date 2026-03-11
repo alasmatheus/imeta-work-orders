@@ -13,11 +13,13 @@ import React from "react";
 import { Add } from "@ui/screens/Add";
 import { Edit } from "@ui/screens/Edit";
 import { Home } from "@ui/screens/Home";
+import { Report } from "@ui/screens/Reports";
 
 export type AppRoutes = {
   home: undefined;
   add: undefined;
   edit: { id: string };
+  report: undefined;
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
@@ -76,6 +78,26 @@ export function AppBottomRoutes() {
         component={Add}
         options={{
           title: "Adicionar",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <Feather
+              name="plus"
+              size={24}
+              color={focused ? THEME.colors.green800 : THEME.colors.gray600}
+            />
+          ),
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontFamily: THEME.fonts.body,
+          },
+        }}
+      />
+
+      <Screen
+        name="report"
+        component={Report}
+        options={{
+          title: "Relatórios",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
             <Feather
