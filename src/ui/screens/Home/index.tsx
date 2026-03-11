@@ -11,6 +11,8 @@ import {
 } from "react-native";
 
 import { Container } from "@/components/Container";
+import { LocalWorkOrder } from "@/domain/workOrders/localWorkOrder";
+import { AppNavigatorRoutesProps } from "@/routes/appBottom.routes";
 import { getLastSyncAt, runSync } from "@/services/sync.service";
 import { useSyncStore } from "@/stores/sync.store";
 import { useWorkOrdersStore } from "@/stores/workOrders.store";
@@ -46,7 +48,7 @@ function getSyncLabel(syncStatus: string) {
 }
 
 export function Home() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   const isOnline = useSyncStore((state) => state.isOnline);
   const isSyncing = useSyncStore((state) => state.isSyncing);
@@ -62,7 +64,7 @@ export function Home() {
   const loadWorkOrders = useWorkOrdersStore((state) => state.loadWorkOrders);
   const softDeleteLocal = useWorkOrdersStore((state) => state.softDeleteLocal);
 
-  const [selectedItem, setSelectedItem] = useState<any | null>(null);
+  const [selectedItem, setSelectedItem] = useState<LocalWorkOrder | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   useEffect(() => {
