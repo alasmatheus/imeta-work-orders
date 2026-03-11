@@ -4,7 +4,7 @@ import {
 } from "@react-navigation/bottom-tabs";
 
 import { HeaderBackButton } from "@/components/HeaderBackButton";
-import { Feather, FontAwesome } from "@expo/vector-icons";
+import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 
 import { THEME } from "@theme/index";
 import React from "react";
@@ -25,6 +25,8 @@ export type AppRoutes = {
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
 
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
+
+const iconSize = 24;
 
 export function AppBottomRoutes() {
   return (
@@ -62,7 +64,7 @@ export function AppBottomRoutes() {
           tabBarIcon: ({ focused }) => (
             <FontAwesome
               name="home"
-              size={24}
+              size={iconSize}
               color={focused ? THEME.colors.green800 : THEME.colors.gray600}
             />
           ),
@@ -82,7 +84,7 @@ export function AppBottomRoutes() {
           tabBarIcon: ({ focused }) => (
             <Feather
               name="plus"
-              size={24}
+              size={iconSize}
               color={focused ? THEME.colors.green800 : THEME.colors.gray600}
             />
           ),
@@ -100,12 +102,13 @@ export function AppBottomRoutes() {
           title: "Relatórios",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <Feather
-              name="plus"
-              size={24}
+            <Ionicons
+              name="documents"
+              size={iconSize}
               color={focused ? THEME.colors.green800 : THEME.colors.gray600}
             />
           ),
+
           tabBarLabelStyle: {
             fontSize: 12,
             fontFamily: THEME.fonts.body,
