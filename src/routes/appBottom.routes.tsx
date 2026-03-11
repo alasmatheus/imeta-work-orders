@@ -4,9 +4,9 @@ import {
 } from "@react-navigation/bottom-tabs";
 import React from "react";
 
-import { CustomTabBar } from "@/components/CustomTabBar";
-import { HeaderBackButton } from "@/components/HeaderBackButton";
 import { THEME } from "@theme/index";
+import { CustomTabBar } from "./componentes/CustomTabBar";
+import { HeaderBackButton } from "./componentes/HeaderBackButton";
 
 import { Add } from "@ui/screens/Add";
 import { Edit } from "@ui/screens/Edit";

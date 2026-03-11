@@ -2,8 +2,8 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Text, TouchableOpacity, View } from "react-native";
 
-import { FloatingAddTabButton } from "@/components/FloatingAddTabButton";
 import { THEME } from "@/theme";
+import { FloatingAddTabButton } from "../FloatingAddTabButton/index";
 import { styles } from "./styles";
 
 export function CustomTabBar({

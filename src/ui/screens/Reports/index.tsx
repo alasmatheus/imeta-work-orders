@@ -2,17 +2,17 @@ import { Feather } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
 import {
   Dimensions,
-  Modal,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { PieChart } from "react-native-chart-kit";
 
 import { Container } from "@/components/Container";
 import { useWorkOrdersStore } from "@/stores/workOrders.store";
 import { THEME } from "@/theme";
+import { TechnicianSelectModal } from "./componentes/TechnicianSelectModal";
 import { styles } from "./styles";
 
 type StatusFilter = "all" | "Pending" | "In Progress" | "Completed";
@@ -235,61 +235,13 @@ export function Report() {
         </View>
       </ScrollView>
 
-      <Modal
+      <TechnicianSelectModal
         visible={isTechnicianModalOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsTechnicianModalOpen(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Selecionar técnico</Text>
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.modalCloseButton}
-                onPress={() => setIsTechnicianModalOpen(false)}
-              >
-                <Feather name="x" size={20} color={THEME.colors.text} />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.modalListContent}
-            >
-              {technicians.map((technician) => {
-                const selected = selectedTechnician === technician;
-
-                return (
-                  <TouchableOpacity
-                    key={technician}
-                    activeOpacity={0.88}
-                    style={[
-                      styles.modalOption,
-                      selected && styles.modalOptionSelected,
-                    ]}
-                    onPress={() => {
-                      setSelectedTechnician(technician);
-                      setIsTechnicianModalOpen(false);
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.modalOptionText,
-                        selected && styles.modalOptionTextSelected,
-                      ]}
-                    >
-                      {technician === "all" ? "Todos" : technician}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+        technicians={technicians}
+        selectedTechnician={selectedTechnician}
+        onClose={() => setIsTechnicianModalOpen(false)}
+        onSelect={setSelectedTechnician}
+      />
     </Container>
   );
 }
