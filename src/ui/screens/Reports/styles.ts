@@ -178,4 +178,93 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: THEME.colors.primary,
   },
+  selectButton: {
+    minHeight: 48,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: THEME.colors.border,
+    backgroundColor: THEME.colors.background,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 14,
+  },
+
+  selectButtonText: {
+    fontFamily: THEME.fonts.semiBold,
+    fontSize: 14,
+    color: THEME.colors.text,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: THEME.colors.overlay,
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+
+  modalCard: {
+    backgroundColor: THEME.colors.card,
+    borderRadius: 24,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: THEME.colors.border,
+    maxHeight: "70%",
+  },
+
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 14,
+    gap: 12,
+  },
+
+  modalTitle: {
+    flex: 1,
+    fontFamily: THEME.fonts.bold,
+    fontSize: 18,
+    color: THEME.colors.text,
+  },
+
+  modalCloseButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: THEME.colors.background,
+  },
+
+  modalListContent: {
+    paddingBottom: 4,
+  },
+
+  modalOption: {
+    minHeight: 48,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    alignItems: "flex-start",
+    justifyContent: "center",
+    backgroundColor: THEME.colors.background,
+    borderWidth: 1,
+    borderColor: THEME.colors.border,
+    marginBottom: 10,
+  },
+
+  modalOptionSelected: {
+    backgroundColor: THEME.colors.primaryLight,
+    borderColor: THEME.colors.onlineBorder,
+  },
+
+  modalOptionText: {
+    fontFamily: THEME.fonts.semiBold,
+    fontSize: 14,
+    color: THEME.colors.text,
+  },
+
+  modalOptionTextSelected: {
+    color: THEME.colors.primary,
+  },
 });

@@ -1,6 +1,8 @@
+import { Feather } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
 import {
   Dimensions,
+  Modal,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -18,13 +20,13 @@ type StatusFilter = "all" | "Pending" | "In Progress" | "Completed";
 function getStatusLabel(status: StatusFilter | string) {
   switch (status) {
     case "Pending":
-      return "Pending";
+      return "Pendente";
     case "In Progress":
-      return "In Progress";
+      return "Em andamento";
     case "Completed":
-      return "Completed";
+      return "Concluído";
     case "all":
-      return "All";
+      return "Todos";
     default:
       return status;
   }
@@ -45,6 +47,7 @@ export function Report() {
 
   const [selectedTechnician, setSelectedTechnician] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
+  const [isTechnicianModalOpen, setIsTechnicianModalOpen] = useState(false);
 
   useEffect(() => {
     loadWorkOrders();
@@ -88,21 +91,21 @@ export function Report() {
 
   const chartData = [
     {
-      name: "Pending",
+      name: "Pendente",
       population: pendingCount,
       color: THEME.colors.warning,
       legendFontColor: THEME.colors.text,
       legendFontSize: 12,
     },
     {
-      name: "In Progress",
+      name: "Em andamento",
       population: inProgressCount,
       color: THEME.colors.primary,
       legendFontColor: THEME.colors.text,
       legendFontSize: 12,
     },
     {
-      name: "Completed",
+      name: "Concluído",
       population: completedCount,
       color: THEME.colors.success,
       legendFontColor: THEME.colors.text,
@@ -112,6 +115,9 @@ export function Report() {
 
   const chartWidth = Dimensions.get("window").width - 32;
 
+  const technicianLabel =
+    selectedTechnician === "all" ? "Todos" : selectedTechnician;
+
   return (
     <Container loading={loading} backgroundColor={THEME.colors.background}>
       <ScrollView
@@ -120,11 +126,8 @@ export function Report() {
       >
         <View style={styles.header}>
           <Text style={styles.eyebrow}>INMETA</Text>
-          <Text style={styles.title}>Reports</Text>
-          <Text style={styles.subtitle}>
-            Analyze local work orders stored in Realm with filters by technician
-            and status.
-          </Text>
+          <Text style={styles.title}>Relatórios</Text>
+          <Text style={styles.subtitle}>Analise as ordens</Text>
         </View>
 
         <View style={styles.summaryCard}>
@@ -136,7 +139,7 @@ export function Report() {
           <View style={styles.summaryDivider} />
 
           <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>Technicians</Text>
+            <Text style={styles.summaryLabel}>Técnicos</Text>
             <Text style={styles.summaryValue}>
               {technicians.length > 0 ? technicians.length - 1 : 0}
             </Text>
@@ -144,32 +147,21 @@ export function Report() {
         </View>
 
         <View style={styles.filtersCard}>
-          <Text style={styles.cardTitle}>Filters</Text>
+          <Text style={styles.cardTitle}>Filtros</Text>
 
-          <Text style={styles.filterLabel}>Technician</Text>
-          <View style={styles.chipsWrap}>
-            {technicians.map((technician) => {
-              const selected = selectedTechnician === technician;
-
-              return (
-                <TouchableOpacity
-                  key={technician}
-                  activeOpacity={0.88}
-                  style={[styles.chip, selected && styles.chipSelected]}
-                  onPress={() => setSelectedTechnician(technician)}
-                >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      selected && styles.chipTextSelected,
-                    ]}
-                  >
-                    {technician === "all" ? "All" : technician}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          <Text style={styles.filterLabel}>Técnico</Text>
+          <TouchableOpacity
+            activeOpacity={0.88}
+            style={styles.selectButton}
+            onPress={() => setIsTechnicianModalOpen(true)}
+          >
+            <Text style={styles.selectButtonText}>{technicianLabel}</Text>
+            <Feather
+              name="chevron-down"
+              size={18}
+              color={THEME.colors.textMuted}
+            />
+          </TouchableOpacity>
 
           <Text style={styles.filterLabel}>Status</Text>
           <View style={styles.chipsWrap}>
@@ -200,7 +192,7 @@ export function Report() {
         </View>
 
         <View style={styles.chartCard}>
-          <Text style={styles.cardTitle}>Status distribution</Text>
+          <Text style={styles.cardTitle}>Distribuição por status</Text>
 
           {chartData.length > 0 ? (
             <PieChart
@@ -217,31 +209,87 @@ export function Report() {
           ) : (
             <View style={styles.emptyChart}>
               <Text style={styles.emptyChartText}>
-                No data available for the selected filters.
+                Não há dados disponíveis para os filtros selecionados.
               </Text>
             </View>
           )}
         </View>
 
         <View style={styles.metricsCard}>
-          <Text style={styles.cardTitle}>Metrics</Text>
+          <Text style={styles.cardTitle}>Métricas</Text>
 
           <View style={styles.metricRow}>
-            <Text style={styles.metricLabel}>Pending</Text>
+            <Text style={styles.metricLabel}>Pendentes</Text>
             <Text style={styles.metricValue}>{pendingCount}</Text>
           </View>
 
           <View style={styles.metricRow}>
-            <Text style={styles.metricLabel}>In Progress</Text>
+            <Text style={styles.metricLabel}>Em andamento</Text>
             <Text style={styles.metricValue}>{inProgressCount}</Text>
           </View>
 
           <View style={styles.metricRow}>
-            <Text style={styles.metricLabel}>Completed</Text>
+            <Text style={styles.metricLabel}>Concluídos</Text>
             <Text style={styles.metricValue}>{completedCount}</Text>
           </View>
         </View>
       </ScrollView>
+
+      <Modal
+        visible={isTechnicianModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsTechnicianModalOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Selecionar técnico</Text>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.modalCloseButton}
+                onPress={() => setIsTechnicianModalOpen(false)}
+              >
+                <Feather name="x" size={20} color={THEME.colors.text} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.modalListContent}
+            >
+              {technicians.map((technician) => {
+                const selected = selectedTechnician === technician;
+
+                return (
+                  <TouchableOpacity
+                    key={technician}
+                    activeOpacity={0.88}
+                    style={[
+                      styles.modalOption,
+                      selected && styles.modalOptionSelected,
+                    ]}
+                    onPress={() => {
+                      setSelectedTechnician(technician);
+                      setIsTechnicianModalOpen(false);
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        selected && styles.modalOptionTextSelected,
+                      ]}
+                    >
+                      {technician === "all" ? "Todos" : technician}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </Container>
   );
 }
