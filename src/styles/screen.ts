@@ -25,14 +25,14 @@ export const screenStyles = StyleSheet.create({
   title: {
     fontFamily: THEME.fonts.bold,
     fontSize: 28,
-    color: THEME.colors.black,
+    color: THEME.colors.text,
     marginBottom: 6,
   },
 
   subtitle: {
     fontFamily: THEME.fonts.body,
     fontSize: 14,
-    color: THEME.colors.gray,
+    color: THEME.colors.text,
     lineHeight: 20,
   },
 
