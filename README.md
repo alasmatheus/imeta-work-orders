@@ -102,3 +102,53 @@ src/
     screens/
   utils/
 ```
+
+Co## Como executar o projeto
+
+### Pré-requisitos
+
+Antes de rodar o projeto é necessário ter instalado:
+
+- Node.js
+- Yarn
+- Android Studio
+- Emulador Android configurado
+- Ambiente React Native configurado
+
+Para rodar no **iOS** também é necessário:
+
+- macOS
+- Xcode
+
+---
+
+### Instalação
+
+Entre na pasta do projeto:
+
+```bash
+cd imeta-work-orders
+
+
+Instale as dependências:
+
+yarn
+
+Rodar no Android:
+
+yarn android
+
+Rodar no iOS (somente macOS):
+
+yarn ios
+
+## Melhorias futuras
+
+Possíveis evoluções do projeto:
+
+- Adicionar toast/snackbar para feedback visual ao usuário
+- Implementar React Hook Form + Yup para validação de formulários
+- Criar testes automatizados para lógica de sincronização
+- Implementar retry/backoff em falhas de rede
+- Evoluir a estratégia de resolução de conflitos
+```
