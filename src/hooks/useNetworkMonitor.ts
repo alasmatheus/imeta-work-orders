@@ -1,9 +1,13 @@
+import * as Network from "expo-network";
 import { useEffect, useRef } from "react";
 
-import { getNetworkStatus } from "@/services/network/network.service";
 import { getLastSyncAt, runSync } from "@/services/sync.service";
 import { useSyncStore } from "@/stores/sync.store";
 import { useWorkOrdersStore } from "@/stores/workOrders.store";
+
+function isOnlineState(state: Network.NetworkState) {
+  return state.isConnected === true && state.isInternetReachable !== false;
+}
 
 export function useNetworkMonitor() {
   const setOnlineStatus = useSyncStore((state) => state.setOnlineStatus);
@@ -14,62 +18,69 @@ export function useNetworkMonitor() {
   const loadFromRealm = useWorkOrdersStore((state) => state.loadFromRealm);
 
   const wasOnlineRef = useRef<boolean | null>(null);
+  const syncInFlightRef = useRef(false);
 
-  useEffect(() => {
-    async function checkConnection() {
-      const status = await getNetworkStatus();
+  async function syncIfNeeded(online: boolean, isInitial = false) {
+    setOnlineStatus(online);
 
-      const online =
-        status.isConnected === true && status.isInternetReachable !== false;
+    const wasOnline = wasOnlineRef.current;
+    wasOnlineRef.current = online;
 
-      setOnlineStatus(online);
+    const cameBackOnline = wasOnline === false && online === true;
+    const shouldSyncOnInit = isInitial && online === true;
+    const shouldOnlyLoadLocal = isInitial;
 
-      const wasOnline = wasOnlineRef.current;
-      wasOnlineRef.current = online;
-
-      if (wasOnline === false && online === true) {
-        try {
-          setSyncing(true);
-          setSyncError(null);
-
-          await runSync();
-          await loadFromRealm();
-
-          const lastSyncAt = await getLastSyncAt();
-          setLastSyncAt(lastSyncAt);
-        } catch {
-          setSyncError("Falha ao sincronizar dados.");
-        } finally {
-          setSyncing(false);
-        }
-      }
-
-      if (wasOnline === null) {
-        await loadFromRealm();
-
-        if (online) {
-          try {
-            setSyncing(true);
-            setSyncError(null);
-
-            await runSync();
-            await loadFromRealm();
-
-            const lastSyncAt = await getLastSyncAt();
-            setLastSyncAt(lastSyncAt);
-          } catch {
-            setSyncError("Falha ao sincronizar dados.");
-          } finally {
-            setSyncing(false);
-          }
-        }
-      }
+    if (shouldOnlyLoadLocal) {
+      await loadFromRealm();
     }
 
-    checkConnection();
+    if (!cameBackOnline && !shouldSyncOnInit) {
+      return;
+    }
 
-    const interval = setInterval(checkConnection, 5000);
+    if (syncInFlightRef.current) {
+      return;
+    }
 
-    return () => clearInterval(interval);
+    try {
+      syncInFlightRef.current = true;
+      setSyncing(true);
+      setSyncError(null);
+
+      await runSync();
+      await loadFromRealm();
+
+      const lastSync = await getLastSyncAt();
+      setLastSyncAt(lastSync);
+    } catch {
+      setSyncError("Falha ao sincronizar dados.");
+    } finally {
+      syncInFlightRef.current = false;
+      setSyncing(false);
+    }
+  }
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function bootstrap() {
+      const initialState = await Network.getNetworkStateAsync();
+
+      if (!isMounted) return;
+
+      await syncIfNeeded(isOnlineState(initialState), true);
+    }
+
+    bootstrap();
+
+    const subscription = Network.addNetworkStateListener(async (state) => {
+      if (!isMounted) return;
+      await syncIfNeeded(isOnlineState(state), false);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
   }, [loadFromRealm, setLastSyncAt, setOnlineStatus, setSyncError, setSyncing]);
 }

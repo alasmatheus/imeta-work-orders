@@ -12,10 +12,6 @@ import { WorkOrdersAPI } from "@/services/workOrders.api";
 
 const LAST_SYNC_KEY = "lastSyncAt";
 
-function getNowIso() {
-  return new Date().toISOString();
-}
-
 function mapRealmObjectToLocalWorkOrder(item: any): LocalWorkOrder {
   return {
     id: String(item.id),
@@ -64,6 +60,31 @@ function applyConflictResolution(
     realm.delete(existing);
     return;
   }
+}
+
+function safeTimestamp(value?: string | null): number {
+  if (!value) return 0;
+
+  const ts = new Date(value).getTime();
+  return Number.isNaN(ts) ? 0 : ts;
+}
+
+function getMostRecentRemoteTimestamp(syncResponse: {
+  created: Array<{ updatedAt: string }>;
+  updated: Array<{ updatedAt: string }>;
+  serverTime?: string | null;
+}): string | null {
+  const candidates = [
+    ...syncResponse.created.map((item) => item.updatedAt),
+    ...syncResponse.updated.map((item) => item.updatedAt),
+    syncResponse.serverTime ?? null,
+  ].filter(Boolean) as string[];
+
+  if (candidates.length === 0) return null;
+
+  return candidates.reduce((latest, current) => {
+    return safeTimestamp(current) > safeTimestamp(latest) ? current : latest;
+  });
 }
 
 async function getLastSyncAtFromRealm(): Promise<string | null> {
@@ -223,8 +244,10 @@ async function pushLocalChanges() {
 }
 
 async function pullRemoteChanges() {
-  const since = (await getLastSyncAtFromRealm()) ?? "1970-01-01T00:00:00.000Z";
-  const syncResponse = await WorkOrdersAPI.sync(since);
+  const previousCursor =
+    (await getLastSyncAtFromRealm()) ?? "1970-01-01T00:00:00.000Z";
+
+  const syncResponse = await WorkOrdersAPI.sync(previousCursor);
   const realm = await getRealm();
 
   realm.write(() => {
@@ -290,8 +313,9 @@ async function pullRemoteChanges() {
         status: localItem.status,
         assignedTo: localItem.assignedTo,
         createdAt: localItem.createdAt,
-        updatedAt: getNowIso(),
-        deletedAt: getNowIso(),
+        updatedAt: syncResponse.serverTime ?? localItem.updatedAt,
+        deletedAt:
+          syncResponse.serverTime ?? localItem.deletedAt ?? localItem.updatedAt,
         completed: localItem.completed,
         deleted: true,
       };
@@ -305,7 +329,14 @@ async function pullRemoteChanges() {
     });
   });
 
-  await setLastSyncAtInRealm(getNowIso());
+  const nextCursor = getMostRecentRemoteTimestamp(syncResponse);
+
+  if (
+    nextCursor &&
+    safeTimestamp(nextCursor) >= safeTimestamp(previousCursor)
+  ) {
+    await setLastSyncAtInRealm(nextCursor);
+  }
 }
 
 export async function runSync(): Promise<void> {
