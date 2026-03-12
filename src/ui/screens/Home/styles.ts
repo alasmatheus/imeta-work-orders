@@ -72,10 +72,6 @@ export const styles = StyleSheet.create({
     color: THEME.colors.warning,
   },
 
-  syncCardWrapper: {
-    marginBottom: 8,
-  },
-
   bannerWarning: {
     backgroundColor: THEME.colors.warningLight,
     borderRadius: 14,

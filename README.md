@@ -27,7 +27,6 @@ O objetivo do app é permitir que ordens de serviço sejam visualizadas, criadas
 - Remoção offline com soft delete
 - Persistência local com Realm
 - Sincronização automática ao reconectar
-- Sincronização manual via botão na tela inicial
 - Controle visual de status de sincronização por item
 - Tratamento básico de conflitos com base em `updatedAt`
 

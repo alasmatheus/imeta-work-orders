@@ -19,7 +19,6 @@ import { useWorkOrdersStore } from "@/stores/workOrders.store";
 import { THEME } from "@/theme";
 import { formatDateTime } from "@/utils/date";
 import { SyncBadge } from "./componentes/SyncBadge";
-import { SyncStatusCard } from "./componentes/SyncStatusCard";
 import { WorkOrderDetailsModal } from "./componentes/WorkOrderDetailsModal";
 import { styles } from "./styles";
 
@@ -126,9 +125,6 @@ export function Home() {
           <View style={styles.headerContent}>
             <Text style={styles.eyebrow}>INMETA</Text>
             <Text style={styles.title}>Ordens de serviço</Text>
-            <Text style={styles.subtitle}>
-              Dados locais armazenados no Realm.
-            </Text>
           </View>
 
           <View
@@ -171,16 +167,6 @@ export function Home() {
             <Text style={styles.bannerErrorText}>{error}</Text>
           </View>
         )}
-
-        <View style={styles.syncCardWrapper}>
-          <SyncStatusCard
-            isOnline={isOnline}
-            isSyncing={isSyncing}
-            lastSyncAt={lastSyncAt}
-            syncError={syncError}
-            onSync={handleManualSync}
-          />
-        </View>
 
         <FlatList
           data={items}

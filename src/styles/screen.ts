@@ -29,13 +29,6 @@ export const screenStyles = StyleSheet.create({
     marginBottom: 6,
   },
 
-  subtitle: {
-    fontFamily: THEME.fonts.body,
-    fontSize: 14,
-    color: THEME.colors.text,
-    lineHeight: 20,
-  },
-
   card: {
     backgroundColor: THEME.colors.white,
     borderRadius: 24,
